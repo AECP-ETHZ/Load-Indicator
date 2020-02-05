@@ -1,7 +1,7 @@
 # 3.02.2020
 
 
-# Niklas Möhring and Leonie Vidensky
+# Niklas MÃ¶hring and Leonie Vidensky
 # Agricultural Economics and Policy Group, ETH Zurich
 
 
@@ -10,7 +10,7 @@
 
 
 
-################################ R-Code for the Computation of the Pesticide Load Indicator (see Kudsk et al., 2018; Möhring et al., 2019)
+################################ R-Code for the Computation of the Pesticide Load Indicator (see Kudsk et al., 2018; MÃ¶hring et al., 2019)
 
 
 
