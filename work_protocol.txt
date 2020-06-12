@@ -1,0 +1,34 @@
+work_protocol.txt
+
+:Author: Uwe Schmitt
+:Email: uwe.schmitt@id.ethz.ch
+:Date: 2020-06-12 15:50
+
+
+1.refactoring:
+
+   - write functions
+   - use explanatory variables
+   - shorten line lengths
+
+1. installation:
+
+    R> install.packages("usethis")
+    R> install.packages("devtools")
+    R> library(devtools)
+    R> devtools::use_testthat()
+
+2. package setyp:
+
+    R> library(usethis)
+    R> create_package("AECPLoadIndicator")
+
+3. update docs from comments:
+
+    R> library(devtools)
+    R> devtools::document()
+
+4. Run tests
+
+    R> library(devtools)
+    R> devtools::test()
