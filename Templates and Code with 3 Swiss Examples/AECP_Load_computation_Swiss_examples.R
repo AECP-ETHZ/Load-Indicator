@@ -244,7 +244,6 @@ compute_toxity_load <- function(substances) {
     0
   )
 
-  # Long-term effect Earthworms
   degradation_factor_soil <-
     (1 - exp((-log(2) / substances$SoilDT50) * 180)) / ((log(2) / substances$SoilDT50) * 180)
 
@@ -252,7 +251,6 @@ compute_toxity_load <- function(substances) {
     1,
     degradation_factor_soil
   )
-
 
   long_term_effect_earthworms <- (substances$Reference.Value.Earthworms.Chronic
     / substances$Earthworms.Chronic.14d.NOEC..Reproduction.mg.kg.corrected
