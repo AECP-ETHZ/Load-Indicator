@@ -7,6 +7,8 @@
 # (Kudsk et al., 2018; Moehring et al., 2019)
 # with three example products from Switzerland
 
+#' @importFrom stats aggregate
+
 required_columns_products <- c(
   "crop",
   "formula",

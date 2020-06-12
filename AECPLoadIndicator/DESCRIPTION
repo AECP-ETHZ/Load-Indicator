@@ -1,6 +1,6 @@
 Package: AECPLoadIndicator
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
+Title: Computes Danish Pesticide Load Indicator
+Version: 0.0.1
 Authors@R: c(
     person(given = "Niklas",
            family = "Moehring",
@@ -16,13 +16,14 @@ Authors@R: c(
            role = c("ctb"),
            email = "uwe.schmitt@id.ethz.ch")
     )
-Description: What the package does (one paragraph).
+Description: This package computes the Danish Pesticide Load Indicator as
+    described (Kudsk et al., 2018; Moehring et al., 2019).
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Suggests:
-    testthat
+    testthat,readxl
 Imports:
     stats
