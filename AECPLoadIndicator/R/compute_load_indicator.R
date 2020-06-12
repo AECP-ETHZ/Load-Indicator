@@ -66,6 +66,11 @@ required_columns_substances <- c(
   "water.phase.DT50.days"
 )
 
+#' Compute Pesticide Load Indicator
+#'
+#' @param substances Dataframe with substance data
+#' @param products Dataframe with products data
+#' @return products Dataframe with added columns
 
 compute_pesticide_load_indicator <- function(substances, products) {
   check_columns(substances, required_columns_substances, c(), "substances")
