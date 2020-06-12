@@ -1,0 +1,28 @@
+Package: AECPLoadIndicator
+Title: What the Package Does (One Line, Title Case)
+Version: 0.0.0.9000
+Authors@R: c(
+    person(given = "Niklas",
+           family = "Moehring",
+           role = c("aut", "cre"),
+           email = "niklas.moehring@mtec.ethz.ch",
+           comment = c(ORCID = "0000-0003-0292-4402")),
+    person(given = "Leonie",
+           family = "Vidensky",
+           role = c("aut"),
+           email = "leonievi@student.ethz.ch"),
+    person(given = "Uwe",
+           family = "Schmitt",
+           role = c("ctb"),
+           email = "uwe.schmitt@id.ethz.ch")
+    )
+Description: What the package does (one paragraph).
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.0.0
+Suggests:
+    testthat
+Imports:
+    stats

@@ -1,0 +1,5 @@
+..Rcheck
+.Rbuildignore
+*.tar.gz
+*.Rcheck
+.*.sw?
