@@ -7,85 +7,81 @@
 # (Kudsk et al., 2018; Moehring et al., 2019)
 # with three example products from Switzerland
 
+required_columns_products <- c(
+  "crop",
+  "formula",
+  "product",
+  "reference.sum.risk.scores",
+  "sum.risk.score"
+)
+
+optional_columns_products <- c("amount.applied", "standard.doses")
+
+required_columns_substances <- c(
+  "Algae.Acute.72hr.EC50.Growth.mg.l",
+  "Aquatic.Invertebrates.Acute.48hr.EC50.mg.l",
+  "Aquatic.Invertebrates.Chronic.21d.NOEC.mg.l.correted",
+  "Aquatic.Plants.Acute.7d.EC50.mg.l",
+  "BCF",
+  "BeesLD50",
+  "Birds.Acute.LD50.mg.kg",
+  "Earthworms.Acute.14d.LC50.mg.kg",
+  "Earthworms.Chronic.14d.NOEC..Reproduction.mg.kg.corrected",
+  "Fish.Acute.96hr.LC50.mg.l",
+  "Fish.Chronic.21d.NOEC.mg.l.corrected",
+  "Load.Factor.Algae",
+  "Load.Factor.Aquatic.Invertebrates",
+  "Load.Factor.Aquatic.Invertebrates.Chronic",
+  "Load.Factor.Aquatic.Plants",
+  "Load.Factor.BCF",
+  "Load.Factor.Bees",
+  "Load.Factor.Birds",
+  "Load.Factor.Earthworms",
+  "Load.Factor.Earthworms.Chronic",
+  "Load.Factor.Fish",
+  "Load.Factor.Fish.Chronic",
+  "Load.Factor.Mammals",
+  "Load.Factor.SCI",
+  "Load.Factor.SoilDT50",
+  "Mammals.Acute.Oral.LD50.mg.kg.BW.day",
+  "Reference.BCF",
+  "Reference.SCI-Grow",
+  "Reference.SoilDT50",
+  "Reference.Value.Algae",
+  "Reference.Value.Aquatic.Invertebrates",
+  "Reference.Value.Aquatic.Invertebrates.Chronic",
+  "Reference.Value.Aquatic.Plants",
+  "Reference.Value.Bees",
+  "Reference.Value.Birds",
+  "Reference.Value.Earthworms",
+  "Reference.Value.Earthworms.Chronic",
+  "Reference.Value.Fish",
+  "Reference.Value.Fish.Chronic",
+  "Reference.Value.Mammals",
+  "SCI-Grow",
+  "SoilDT50",
+  "concentration",
+  "product",
+  "substance",
+  "water.phase.DT50.days"
+)
+
 
 compute_pesticide_load_indicator <- function(substances, products) {
-  check_substances(substances)
-  check_products(products)
+  check_columns(substances, required_columns_substances, c(), "substances")
+  check_columns(products, required_columns_products, optional_columns_products, "products")
+
   substances <- compute_fate_load(substances)
   substances <- compute_toxity_load(substances)
+
   products <- compute_health_load(products)
   products <- compute_pesticide_load(products, substances)
-  products <- compute_load_index(products)
+
+  if (all(optional_columns_products %in% names(products))) {
+    products <- compute_load_index(products)
+  }
 
   return(products)
-}
-
-
-check_products <- function(products) {
-  required <- c(
-    "crop",
-    "formula",
-    "product",
-    "reference.sum.risk.scores",
-    "sum.risk.score"
-  )
-  optional <- c("amount.applied", "standard.doses")
-
-  check_columns(products, required, optional, "products")
-}
-
-
-check_substances <- function(substances) {
-  required <- c(
-    "Algae.Acute.72hr.EC50.Growth.mg.l",
-    "Aquatic.Invertebrates.Acute.48hr.EC50.mg.l",
-    "Aquatic.Invertebrates.Chronic.21d.NOEC.mg.l.correted",
-    "Aquatic.Plants.Acute.7d.EC50.mg.l",
-    "BCF",
-    "BeesLD50",
-    "Birds.Acute.LD50.mg.kg",
-    "Earthworms.Acute.14d.LC50.mg.kg",
-    "Earthworms.Chronic.14d.NOEC..Reproduction.mg.kg.corrected",
-    "Fish.Acute.96hr.LC50.mg.l",
-    "Fish.Chronic.21d.NOEC.mg.l.corrected",
-    "Load.Factor.Algae",
-    "Load.Factor.Aquatic.Invertebrates",
-    "Load.Factor.Aquatic.Invertebrates.Chronic",
-    "Load.Factor.Aquatic.Plants",
-    "Load.Factor.BCF",
-    "Load.Factor.Bees",
-    "Load.Factor.Birds",
-    "Load.Factor.Earthworms",
-    "Load.Factor.Earthworms.Chronic",
-    "Load.Factor.Fish",
-    "Load.Factor.Fish.Chronic",
-    "Load.Factor.Mammals",
-    "Load.Factor.SCI",
-    "Load.Factor.SoilDT50",
-    "Mammals.Acute.Oral.LD50.mg.kg.BW.day",
-    "Reference.BCF",
-    "Reference.SCI-Grow",
-    "Reference.SoilDT50",
-    "Reference.Value.Algae",
-    "Reference.Value.Aquatic.Invertebrates",
-    "Reference.Value.Aquatic.Invertebrates.Chronic",
-    "Reference.Value.Aquatic.Plants",
-    "Reference.Value.Bees",
-    "Reference.Value.Birds",
-    "Reference.Value.Earthworms",
-    "Reference.Value.Earthworms.Chronic",
-    "Reference.Value.Fish",
-    "Reference.Value.Fish.Chronic",
-    "Reference.Value.Mammals",
-    "SCI-Grow",
-    "SoilDT50",
-    "concentration",
-    "product",
-    "substance",
-    "water.phase.DT50.days"
-  )
-
-  check_columns(substances, required, c(), "substances")
 }
 
 
