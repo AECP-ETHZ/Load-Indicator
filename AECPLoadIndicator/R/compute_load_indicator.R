@@ -93,9 +93,6 @@ compute_pesticide_load_indicator <- function(substances, products) {
   return(products)
 }
 
-# TODO: eval Access access
-# TODO: default reference values
-
 
 #' Check if column names are valid
 #'
