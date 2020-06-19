@@ -73,10 +73,12 @@ required_columns_substances <- c(
 #' @param substances Dataframe with substance data
 #' @param products Dataframe with products data
 #' @return products Dataframe with added columns
+#'
+#' @export
 
 compute_pesticide_load_indicator <- function(substances, products) {
-  check_columns(substances, required_columns_substances, c(), "substances")
-  check_columns(products, required_columns_products, optional_columns_products, "products")
+  check_substance_column_names(substances)
+  check_products_column_names(products)
 
   substances <- compute_fate_load(substances)
   substances <- compute_toxity_load(substances)
@@ -89,6 +91,39 @@ compute_pesticide_load_indicator <- function(substances, products) {
   }
 
   return(products)
+}
+
+# TODO: eval Access access
+# TODO: default reference values
+
+
+#' Check if column names are valid
+#'
+#' @param substances Dataframe with substance data
+#'
+#' @export
+
+check_substance_column_names <- function(substances)
+{
+    check_columns(substances,
+                  required_columns_substances,
+                  c(),
+                  "substances")
+}
+
+
+#' Check if column names are valid
+#'
+#' @param products Dataframe with substance data
+#'
+#' @export
+
+check_products_column_names <- function(products)
+{
+    check_columns(products,
+                  required_columns_products,
+                  optional_columns_products,
+                  "products")
 }
 
 
