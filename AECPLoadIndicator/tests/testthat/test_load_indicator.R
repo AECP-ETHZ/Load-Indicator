@@ -15,13 +15,13 @@ test_that("load indicator produces known result", {
     "LI"
   )
 
-  expect_equal(names(result), expected_col_names);
-  expect_equal(dim(result), c(4, 13));
+  expect_equal(names(result), expected_col_names)
+  expect_equal(dim(result), c(4, 13))
 
-  expect_equal(mean(result$HL), 0.348, tolerance=1e-3);
-  expect_equal(mean(result$TL), 0.168, tolerance=1e-3);
-  expect_equal(mean(result$L), 0.634, tolerance=1e-3);
-  expect_equal(mean(result$STI), 0.763, tolerance=1e-3);
-  expect_equal(mean(result$LI), 0.442, tolerance=1e-3);
+  expect_equal(result$HL, c(0.6429, 0.1071, 0.0857, 0.557), tolerance=1e-3)
+  expect_equal(result$TL, c(0.3039, 0.1424, 0.0173, 0.2084), tolerance=1e-3)
+  expect_equal(result$L, c(1.117, 0.278, 0.231, 0.910), tolerance=1e-3)
+  expect_equal(result$STI, c(0.5, 1.667, NA, NA), tolerance=1e-3)
+  expect_equal(result$LI, c(0.5583, 0.4638, NA, NA), tolerance=1e-3)
 
 })
