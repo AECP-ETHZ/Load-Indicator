@@ -68,7 +68,7 @@ required_columns_substances <- c(
   "water.phase.DT50.days"
 )
 
-#' Compute Pesticide Load Indicator
+#' @title Compute Pesticide Load Indicator
 #'
 #' @param substances Dataframe with substance data
 #' @param products Dataframe with products data
@@ -94,7 +94,7 @@ compute_pesticide_load_indicator <- function(substances, products) {
 }
 
 
-#' Check if column names are valid
+#' @title Check if column names of substances are valid
 #'
 #' @param substances Dataframe with substance data
 #'
@@ -109,7 +109,7 @@ check_substance_column_names <- function(substances)
 }
 
 
-#' Check if column names are valid
+#' @title Check if column names of products are valid
 #'
 #' @param products Dataframe with substance data
 #'
