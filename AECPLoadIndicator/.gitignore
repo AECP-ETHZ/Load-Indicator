@@ -3,3 +3,6 @@
 *.tar.gz
 *.Rcheck
 .*.sw?
+inst/doc
+doc
+Meta

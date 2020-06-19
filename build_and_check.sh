@@ -1,5 +1,6 @@
 rm -r AECPLoadIndicator*.tar.gz
 
-RScript -e 'library(devtools); devtools::document("AECPLoadIndicator")'
-R CMD build AECPLoadIndicator
+cd AECPLoadIndicator
+RScript -e 'library(devtools); devtools::build_vignettes; devtools::document()'
+R CMD build .
 R CMD check --as-cran AECPLoadIndicator*.tar.gz
