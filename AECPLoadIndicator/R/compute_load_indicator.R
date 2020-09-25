@@ -20,52 +20,68 @@ required_columns_products <- c(
 optional_columns_products <- c("amount.applied", "standard.doses")
 
 required_columns_substances <- c(
-  "Algae.Acute.72hr.EC50.Growth.mg.l",
-  "Aquatic.Invertebrates.Acute.48hr.EC50.mg.l",
-  "Aquatic.Invertebrates.Chronic.21d.NOEC.mg.l.correted",
-  "Aquatic.Plants.Acute.7d.EC50.mg.l",
-  "BCF",
-  "BeesLD50",
-  "Birds.Acute.LD50.mg.kg",
-  "Earthworms.Acute.14d.LC50.mg.kg",
-  "Earthworms.Chronic.14d.NOEC..Reproduction.mg.kg.corrected",
-  "Fish.Acute.96hr.LC50.mg.l",
-  "Fish.Chronic.21d.NOEC.mg.l.corrected",
-  "Load.Factor.Algae",
-  "Load.Factor.Aquatic.Invertebrates",
-  "Load.Factor.Aquatic.Invertebrates.Chronic",
-  "Load.Factor.Aquatic.Plants",
-  "Load.Factor.BCF",
-  "Load.Factor.Bees",
-  "Load.Factor.Birds",
-  "Load.Factor.Earthworms",
-  "Load.Factor.Earthworms.Chronic",
-  "Load.Factor.Fish",
-  "Load.Factor.Fish.Chronic",
-  "Load.Factor.Mammals",
-  "Load.Factor.SCI",
-  "Load.Factor.SoilDT50",
-  "Mammals.Acute.Oral.LD50.mg.kg.BW.day",
-  "Reference.BCF",
-  "Reference.SCI-Grow",
-  "Reference.SoilDT50",
-  "Reference.Value.Algae",
-  "Reference.Value.Aquatic.Invertebrates",
-  "Reference.Value.Aquatic.Invertebrates.Chronic",
-  "Reference.Value.Aquatic.Plants",
-  "Reference.Value.Bees",
-  "Reference.Value.Birds",
-  "Reference.Value.Earthworms",
-  "Reference.Value.Earthworms.Chronic",
-  "Reference.Value.Fish",
-  "Reference.Value.Fish.Chronic",
-  "Reference.Value.Mammals",
-  "SCI-Grow",
-  "SoilDT50",
-  "concentration",
-  "product",
   "substance",
-  "water.phase.DT50.days"
+  "product",
+  "concentration",
+
+  "SCI-Grow",
+  "Reference.SCI-Grow",
+  "Load.Factor.SCI",
+
+  "BCF",
+  "Reference.BCF",
+  "Load.Factor.BCF",
+
+  "SoilDT50",
+  "Reference.SoilDT50",
+  "Load.Factor.SoilDT50",
+
+  "Birds.Acute.LD50.mg.kg",
+  "Reference.Value.Birds",
+  "Load.Factor.Birds",
+
+  "Mammals.Acute.Oral.LD50.mg.kg.BW.day",
+  "Reference.Value.Mammals",
+  "Load.Factor.Mammals",
+
+  "Fish.Acute.96hr.LC50.mg.l",
+  "Reference.Value.Fish",
+  "Load.Factor.Fish",
+
+  "Aquatic.Invertebrates.Acute.48hr.EC50.mg.l",
+  "Reference.Value.Aquatic.Invertebrates",
+  "Load.Factor.Aquatic.Invertebrates",
+
+  "Algae.Acute.72hr.EC50.Growth.mg.l",
+  "Reference.Value.Algae",
+  "Load.Factor.Algae",
+
+  "Aquatic.Plants.Acute.7d.EC50.mg.l",
+  "Reference.Value.Aquatic.Plants",
+  "Load.Factor.Aquatic.Plants",
+
+  "Earthworms.Acute.14d.LC50.mg.kg",
+  "Reference.Value.Earthworms",
+  "Load.Factor.Earthworms",
+
+  "BeesLD50",
+  "Reference.Value.Bees",
+  "Load.Factor.Bees",
+
+  "Fish.Chronic.21d.NOEC.mg.l.corrected",
+  "Reference.Value.Fish.Chronic",
+  "Load.Factor.Fish.Chronic",
+
+  "water.phase.DT50.days",
+
+  "Aquatic.Invertebrates.Chronic.21d.NOEC.mg.l.correted",
+  "Reference.Value.Aquatic.Invertebrates.Chronic",
+  "Load.Factor.Aquatic.Invertebrates.Chronic",
+
+  "Earthworms.Chronic.14d.NOEC..Reproduction.mg.kg.corrected",
+  "Reference.Value.Earthworms.Chronic",
+  "Load.Factor.Earthworms.Chronic"
+
 )
 
 #' @title Compute Pesticide Load Indicator
