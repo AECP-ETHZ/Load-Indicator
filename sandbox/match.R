@@ -138,7 +138,7 @@ create.substances.table <- function(input_table) {
                 row$Load.Factor.Bees,
 
                 ecotox_row$Fish...Chronic.21d.NOEC.mg.l,
-                3,
+                0.00015,
                 row$Load.Factor.Fish.Chronic,
 
                 fate_row$Water.phase.DT50...days,
@@ -161,4 +161,3 @@ create.substances.table <- function(input_table) {
 
 t <- create.substances.table(read.csv("substances_example.csv"))
 print(t);
-
