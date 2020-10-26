@@ -106,6 +106,8 @@ compute_pesticide_load_indicator <- function(substances, products) {
     products <- compute_load_index(products)
   }
 
+  match.ppdb
+
   return(products)
 }
 

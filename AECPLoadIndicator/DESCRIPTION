@@ -25,9 +25,10 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.0
 Suggests:
     testthat,
-    readxl,
     knitr,
     rmarkdown
 Imports:
-    stats
+    readxl,
+    stats,
+    stringr
 VignetteBuilder: knitr

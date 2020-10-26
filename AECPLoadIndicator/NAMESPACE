@@ -3,4 +3,6 @@
 export(check_products_column_names)
 export(check_substance_column_names)
 export(compute_pesticide_load_indicator)
+importFrom(readxl,read_excel)
 importFrom(stats,aggregate)
+importFrom(stringr,str_detect)

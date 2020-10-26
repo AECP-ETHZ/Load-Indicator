@@ -1,6 +1,5 @@
-library(AECPLoadIndicator)
-library(stringr)
-library(readxl)
+#' @importFrom readxl read_excel
+#' @importFrom stringr str_detect
 
 
 read.excel <- function(excel_file) {
@@ -174,8 +173,8 @@ extend.products.table <- function(products_table, substances_table, human, gener
                 sum.risk.score <- sum.risk.score + compute_HR(human_row)
             }
         }
-        products_table[irow, "sum.risk.score"] <- sum.risk.score;
-        products_table[irow, "reference.sum.risk.score"] <- 350;
+        products_table[irow, "sum.risk.score"] <- sum.risk.score
+        products_table[irow, "reference.sum.risk.score"] <- 350
     }
     products_table
 }
@@ -185,24 +184,24 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 
     names(input_table)<-make.names(names(input_table))
 
-    fate <- extend.fate(fate);
+    fate <- extend.fate(fate)
 
-    col_names <- AECPLoadIndicator:::required_columns_substances
+    col_names <- required_columns_substances
 
     result <- data.frame(matrix(NA, nrow = nrow(input_table), ncol = length(col_names)),
                         stringsAsFactors=FALSE)
     names(result) <- col_names
 
-    row.count <- 0;
+    row.count <- 0
 
     for (irow in 1:nrow(input_table)) {
-        row = input_table[irow,];
-        CAS = row$CAS.number;
-        substance = row$substance;
+        row = input_table[irow,]
+        CAS = row$CAS.number
+        substance = row$substance
         if (CAS == "" || substance == "")
             next
 
-        match = general[which(general[,18] == CAS),];
+        match = general[which(general[,18] == CAS),]
 
         if (nrow(match) == 0) {
             cat(paste("no entry for CAS", CAS, "\n"))
@@ -214,10 +213,10 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
             next
         }
 
-        id <- match$ID;
+        id <- match$ID
 
-        fate_row <- fate[which(fate$ID == id),];
-        ecotox_row <- ecotox[which(ecotox$ID == id),];
+        fate_row <- fate[which(fate$ID == id),]
+        ecotox_row <- ecotox[which(ecotox$ID == id),]
 
         row = c(
                 row$substance,
@@ -284,34 +283,23 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
                 row$Load.Factor.Earthworms.Chronic
                 )
 
-        row.count <- row.count + 1;
+        row.count <- row.count + 1
         result[row.count,] = row
 
     }
     result <- result[seq(1, row.count), ]
 }
 
-# TODO: take example products.csv and substances_example.csv, run code and feed
-#       feed into existing functions. write test;
 
-library(readxl)
-options(width=200)
+match.ppdb <- function(s, p, folder) {
 
-s <- read.csv("substances_example.csv");
-p <- read.excel("Table_R_products_example.xlsx");
-p[,"Year"] <- 2013;
+    human <- read.excel(file.path(folder, "Human.xlsx"))
+    general <- read.excel(file.path(folder, "General.xlsx"))
+    fate <- read.excel(file.path(folder, "Fate.xlsx"))
+    ecotox <- read.excel(file.path(folder, "Ecotox.xlsx"))
 
-process <- function(s, p, folder) {
-
-    human <- read.excel(file.path(folder, "Human.xlsx"));
-    general <- read.excel(file.path(folder, "General.xlsx"));
-    fate <- read.excel(file.path(folder, "Fate.xlsx"));
-    ecotox <- read.excel(file.path(folder, "Ecotox.xlsx"));
-
-    p <- extend.products.table(p, s, human, general);
-    s <- create.substances.table(s, general, fate, ecotox);
+    p <- extend.products.table(p, s, human, general)
+    s <- create.substances.table(s, general, fate, ecotox)
 
     return(list(products=p, substances=s))
 }
-
-process(s, p, ".")

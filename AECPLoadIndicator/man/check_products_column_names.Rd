@@ -2,7 +2,7 @@
 % Please edit documentation in R/compute_load_indicator.R
 \name{check_products_column_names}
 \alias{check_products_column_names}
-\title{Check if column names are valid}
+\title{Check if column names of products are valid}
 \usage{
 check_products_column_names(products)
 }
@@ -10,5 +10,5 @@ check_products_column_names(products)
 \item{products}{Dataframe with substance data}
 }
 \description{
-Check if column names are valid
+Check if column names of products are valid
 }
