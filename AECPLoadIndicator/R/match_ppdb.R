@@ -174,7 +174,7 @@ extend.products.table <- function(products_table, substances_table, human, gener
             }
         }
         products_table[irow, "sum.risk.score"] <- sum.risk.score
-        products_table[irow, "reference.sum.risk.score"] <- 350
+        products_table[irow, "reference.sum.risk.scores"] <- 350
     }
     products_table
 }
@@ -221,66 +221,66 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
         row = c(
                 row$substance,
                 row$product,
-                row$concentration,
+                as.numeric(row$concentration),
 
-                fate_row$SCI.GROW,
+                as.numeric(fate_row$SCI.GROW),
                 12.5,
-                row$Load.Factor.SCI,
+                as.numeric(row$Load.Factor.SCI),
 
-                fate_row$BCF,
+                as.numeric(fate_row$BCF),
                 5100,
-                row$Load.Factor.BCF,
+                as.numeric(row$Load.Factor.BCF),
 
-                fate_row$SoilDT50,
+                as.numeric(fate_row$SoilDT50),
                 354,
-                row$Load.Factor.SoilDT50,
+                as.numeric(row$Load.Factor.SoilDT50),
 
-                ecotox_row$Birds...Acute.LD50.mg.kg,
+                as.numeric(ecotox_row$Birds...Acute.LD50.mg.kg),
                 10,
-                row$Load.Factor.Birds,
+                as.numeric(row$Load.Factor.Birds),
 
-                ecotox_row$Mammals...Acute.Oral.LD50.mg.kg.BW.day,
+                as.numeric(ecotox_row$Mammals...Acute.Oral.LD50.mg.kg.BW.day),
                 8,
-                row$Load.Factor.Mammals,
+                as.numeric(row$Load.Factor.Mammals),
 
-                ecotox_row$Fish...Acute.96hr.LC50.mg.l,
+                as.numeric(ecotox_row$Fish...Acute.96hr.LC50.mg.l),
                 0.00021,
-                row$Load.Factor.Fish,
+                as.numeric(row$Load.Factor.Fish),
 
-                ecotox_row$Aquatic.Invertebrates...Acute.48hr.EC50.mg.l,
+                as.numeric(ecotox_row$Aquatic.Invertebrates...Acute.48hr.EC50.mg.l),
                 0.00015,
-                row$Load.Factor.Aquatic.Invertebrates,
+                as.numeric(row$Load.Factor.Aquatic.Invertebrates),
 
-                ecotox_row$Algae...Acute.72hr.EC50.Growth.mg.l,
+                as.numeric(ecotox_row$Algae...Acute.72hr.EC50.Growth.mg.l),
                 0.00002,
-                row$Load.Factor.Algae,
+                as.numeric(row$Load.Factor.Algae),
 
-                ecotox_row$Aquatic.Plants...Acute.7d.EC50.mg.l,
+                as.numeric(ecotox_row$Aquatic.Plants...Acute.7d.EC50.mg.l),
                 0.00035,
-                row$Load.Factor.Aquatic.Plants,
+                as.numeric(row$Load.Factor.Aquatic.Plants),
 
-                ecotox_row$Earthworms...Acute.14d.LC50.mg.kg,
+                as.numeric(ecotox_row$Earthworms...Acute.14d.LC50.mg.kg),
                 1.0,
-                row$Load.Factor.Earthworms,
+                as.numeric(row$Load.Factor.Earthworms),
 
                 (as.numeric(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee) +
                  as.numeric(ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee)) / 2.0,
                 0.015,
-                row$Load.Factor.Bees,
+                as.numeric(row$Load.Factor.Bees),
 
-                ecotox_row$Fish...Chronic.21d.NOEC.mg.l,
+                as.numeric(ecotox_row$Fish...Chronic.21d.NOEC.mg.l),
                 0.00015,
-                row$Load.Factor.Fish.Chronic,
+                as.numeric(row$Load.Factor.Fish.Chronic),
 
-                fate_row$Water.phase.DT50...days,
+                as.numeric(fate_row$Water.phase.DT50...days),
 
-                ecotox_row$Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l,
+                as.numeric(ecotox_row$Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l),
                 0.00015,
-                row$Load.Factor.Aquatic.Invertebrates.Chronic,
+                as.numeric(row$Load.Factor.Aquatic.Invertebrates.Chronic),
 
-                ecotox_row$Earthworms...Chronic.NOEC,
+                as.numeric(ecotox_row$Earthworms...Chronic.NOEC),
                 0.8,
-                row$Load.Factor.Earthworms.Chronic
+                as.numeric(row$Load.Factor.Earthworms.Chronic)
                 )
 
         row.count <- row.count + 1

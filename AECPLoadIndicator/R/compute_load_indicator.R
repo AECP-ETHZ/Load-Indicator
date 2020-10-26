@@ -17,6 +17,17 @@ required_columns_products <- c(
   "sum.risk.score"
 )
 
+
+prepare.products <- function(products)
+{
+    for (i in 4:5) {
+        name = required_columns_products[i]
+        products[, name] <- as.numeric(products[,name])
+    }
+    products
+}
+
+
 optional_columns_products <- c("amount.applied", "standard.doses")
 
 required_columns_substances <- c(
@@ -84,6 +95,17 @@ required_columns_substances <- c(
 
 )
 
+
+prepare.substances <- function(substances)
+{
+    for (i in 3:length(required_columns_substances)) {
+        name = required_columns_substances[i]
+        substances[,name] <- as.numeric(substances[,name])
+    }
+    substances
+}
+
+
 #' @title Compute Pesticide Load Indicator
 #'
 #' @param substances Dataframe with substance data
@@ -96,6 +118,9 @@ compute_pesticide_load_indicator <- function(substances, products) {
   check_substance_column_names(substances)
   check_products_column_names(products)
 
+  products <- prepare.products(products)
+  substances <- prepare.substances(substances)
+
   substances <- compute_fate_load(substances)
   substances <- compute_toxity_load(substances)
 
@@ -106,9 +131,26 @@ compute_pesticide_load_indicator <- function(substances, products) {
     products <- compute_load_index(products)
   }
 
-  match.ppdb
-
   return(products)
+}
+
+
+#' @title Compute Pesticide Load Indicator with PPDB match
+#'
+#' @param substances Dataframe with substance data
+#' @param products Dataframe with products data
+#' @param folder folder with exported xlsx files from PPDB
+#' @return products Dataframe with added columns
+#'
+#' @export
+
+compute_pesticide_load_indicator_ppdb <- function(substances, products, folder) {
+
+  tables <- match.ppdb(substances, products, folder)
+  substances <- tables$substances
+  products <- tables$products
+  products <- products[, names(products) != "Year"]
+  return(compute_pesticide_load_indicator(substances, products))
 }
 
 
@@ -347,6 +389,7 @@ compute_health_load <- function(products) {
 
 
 compute_pesticide_load <- function(products, substances) {
+
   TL.products <- substances$concentration * substances$Environmental.Toxicity.Substance
   FL.products <- substances$concentration * substances$Fate.Load.substances
 
