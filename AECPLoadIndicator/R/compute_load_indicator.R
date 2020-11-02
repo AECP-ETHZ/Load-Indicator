@@ -22,7 +22,7 @@ prepare.products <- function(products)
 {
     for (i in 4:5) {
         name = required_columns_products[i]
-        products[, name] <- as.numeric(products[,name])
+        products[, name] <- as.numeric(unlist(products[,name]))
     }
     products
 }
@@ -31,6 +31,7 @@ prepare.products <- function(products)
 optional_columns_products <- c("amount.applied", "standard.doses")
 
 
+#' @title Default load factors
 #' @export
 default.load.factors <- list(
     Load.Factor.SCI=20,
@@ -120,7 +121,7 @@ prepare.substances <- function(substances)
 {
     for (i in 3:length(required_columns_substances)) {
         name = required_columns_substances[i]
-        substances[,name] <- as.numeric(substances[,name])
+        substances[,name] <- as.numeric(unlist(substances[,name]))
     }
     substances
 }
@@ -181,6 +182,7 @@ compute_pesticide_load_indicator_ppdb <- function(substances, products, folder) 
 #' @param formula formulation
 #' @param substances list or vector of substance names
 #' @param cas_numbers list or vector of CAS numbers
+#' @param concentrations list or vector of concentrations
 #' @param ... overrides for default load factors
 #' @return products Dataframe with computed pestice loads
 #'
@@ -463,7 +465,7 @@ compute_pesticide_load <- function(products, substances) {
 
 compute_load_index <- function(products) {
   sti_quotient <- products$amount.applied / products$standard.doses
-  load_index <- sti_qutient * products$L
+  load_index <- sti_quotient * products$L
 
   products$STI <- sti_quotient
   products$LI <- load_index
