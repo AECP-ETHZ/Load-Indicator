@@ -291,15 +291,24 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 }
 
 
-match.ppdb <- function(s, p, folder) {
+#' @title Extend tables by data from PPDB
+#'
+#' @param substances Dataframe with substance data
+#' @param products Dataframe with products data
+#' @param folder folder with exported xlsx files from PPDB
+#' @return names lists with updated substances and products data frames
+#'
+#' @export
+
+match.ppdb <- function(substances, products, folder) {
 
     human <- read.excel(file.path(folder, "Human.xlsx"))
     general <- read.excel(file.path(folder, "General.xlsx"))
     fate <- read.excel(file.path(folder, "Fate.xlsx"))
     ecotox <- read.excel(file.path(folder, "Ecotox.xlsx"))
 
-    p <- extend.products.table(p, s, human, general)
-    s <- create.substances.table(s, general, fate, ecotox)
+    products <- extend.products.table(products, substances, human, general)
+    substances <- create.substances.table(substances, general, fate, ecotox)
 
-    return(list(products=p, substances=s))
+    return(list(products=products, substances=substances))
 }

@@ -470,3 +470,4 @@ compute_load_index <- function(products) {
 
   return(products)
 }
+
