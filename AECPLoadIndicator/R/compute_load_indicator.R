@@ -30,6 +30,26 @@ prepare.products <- function(products)
 
 optional_columns_products <- c("amount.applied", "standard.doses")
 
+
+#' @export
+default.load.factors <- list(
+    Load.Factor.SCI=20,
+    Load.Factor.BCF=2.5,
+    Load.Factor.SoilDT50=2.5,
+    Load.Factor.Birds=1,
+    Load.Factor.Mammals=1,
+    Load.Factor.Fish=30,
+    Load.Factor.Aquatic.Invertebrates=30,
+    Load.Factor.Algae=3,
+    Load.Factor.Aquatic.Plants=3,
+    Load.Factor.Earthworms=2,
+    Load.Factor.Bees=100,
+    Load.Factor.Fish.Chronic=3,
+    Load.Factor.Aquatic.Invertebrates.Chronic=3,
+    Load.Factor.Earthworms.Chronic=2
+)
+
+
 required_columns_substances <- c(
   "substance",
   "product",
@@ -151,6 +171,42 @@ compute_pesticide_load_indicator_ppdb <- function(substances, products, folder) 
   products <- tables$products
   products <- products[, names(products) != "Year"]
   return(compute_pesticide_load_indicator(substances, products))
+}
+
+#' @title Compute Pesticide Load Indicator with PPDB match
+#'
+#' @param folder folder with exported xlsx files from PPDB
+#' @param product product name
+#' @param year year
+#' @param formula formulation
+#' @param substances list or vector of substance names
+#' @param cas_numbers list or vector of CAS numbers
+#' @param ... overrides for default load factors
+#' @return products Dataframe with computed pestice loads
+#'
+#' @export
+
+compute_pesticide_load_indicator_single <- function(folder, product, year, formula,
+                                                    substances, cas_numbers,
+                                                    concentrations, ...) {
+
+    products <- data.frame(product=product,
+                           Year=year,
+                           crop="",
+                           formula=formula)
+
+    substances <- data.frame(CAS.number=cas_numbers,
+                             substance=substances,
+                             concentration=concentrations,
+                             product=product)
+    overrides <- list(...)
+    for (name in names(default.load.factors)) {
+        value <- overrides[[name]]
+        if (is.null(value))
+            value <- default.load.factors[[name]]
+        substances[[name]] <- value
+    }
+    compute_pesticide_load_indicator_ppdb(substances, products, folder)
 }
 
 
@@ -406,10 +462,10 @@ compute_pesticide_load <- function(products, substances) {
 
 
 compute_load_index <- function(products) {
-  sti_qutient <- products$amount.applied / products$standard.doses
+  sti_quotient <- products$amount.applied / products$standard.doses
   load_index <- sti_qutient * products$L
 
-  products$STI <- sti_qutient
+  products$STI <- sti_quotient
   products$LI <- load_index
 
   return(products)
