@@ -9,7 +9,7 @@ test_that("load indicator produces known result", {
     "product", "crop",
     "sum.risk.score", "reference.sum.risk.scores",
     "formula", "amount.applied",
-    "standard.doses", "HL",
+    "standard.dosage", "HL",
     "TL", "FL",
     "L", "STI",
     "LI"
@@ -19,9 +19,9 @@ test_that("load indicator produces known result", {
   expect_equal(dim(result), c(4, 13))
 
   expect_equal(result$HL, c(0.6429, 0.1071, 0.0857, 0.557), tolerance=1e-3)
-  expect_equal(result$TL, c(0.3039, 0.1424, 0.0173, 0.2084), tolerance=1e-3)
-  expect_equal(result$L, c(1.117, 0.278, 0.231, 0.910), tolerance=1e-3)
+  expect_equal(result$TL, c(0.274, 0.1424, 0.0173, 0.216), tolerance=1e-3)
+  expect_equal(result$L, c(1.087, 0.278, 0.231, 0.918), tolerance=1e-3)
   expect_equal(result$STI, c(0.5, 1.667, NA, NA), tolerance=1e-3)
-  expect_equal(result$LI, c(0.5583, 0.4638, NA, NA), tolerance=1e-3)
+  expect_equal(result$LI, c(0.543, 0.4638, NA, NA), tolerance=1e-3)
 
 })

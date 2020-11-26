@@ -22,13 +22,14 @@ prepare.products <- function(products)
 {
     for (i in 4:5) {
         name = required_columns_products[i]
-        products[, name] <- as.numeric(unlist(products[,name]))
+        # products[, name] <- as.numeric(unlist(products[,name]))
+        products[,name] <- as.numeric(sub(", ", ".", unlist(products[,name]), fixed=TRUE))
     }
     products
 }
 
 
-optional_columns_products <- c("amount.applied", "standard.doses")
+optional_columns_products <- c("amount.applied", "standard.dosage")
 
 
 #' @title Default load factors
@@ -56,8 +57,8 @@ required_columns_substances <- c(
   "product",
   "concentration",
 
-  "SCI-Grow",
-  "Reference.SCI-Grow",
+  "SCI.Grow",
+  "Reference.SCI.Grow",
   "Load.Factor.SCI",
 
   "BCF",
@@ -117,11 +118,12 @@ required_columns_substances <- c(
 )
 
 
+
 prepare.substances <- function(substances)
 {
     for (i in 3:length(required_columns_substances)) {
         name = required_columns_substances[i]
-        substances[,name] <- as.numeric(unlist(substances[,name]))
+        substances[,name] <- as.numeric(sub(", ", ".", unlist(substances[,name]), fixed=TRUE))
     }
     substances
 }
@@ -241,35 +243,33 @@ check_products_column_names <- function(products)
                   "products")
 }
 
+.is.superset <- function(a, b)
+{
+    length(intersect(a, b)) == length(intersect(b, b))
+}
+
+
 
 check_columns <- function(data_frame, required, optional, name) {
   found_columns <- names(data_frame)
 
-  if (setequal(found_columns, required)) {
+  if (.is.superset(found_columns, required)) {
     return(data_frame)
   }
 
-
-  if (setequal(found_columns, union(required, optional))) {
+  if (.is.superset(found_columns, union(required, optional))) {
     return(data_frame)
   }
 
   missing <- setdiff(required, found_columns)
-  unknown <- setdiff(found_columns, union(required, optional))
-
   missing_str <- paste(missing, collapse = ", ")
-  unknown_str <- paste(unknown, collapse = ", ")
 
   if (length(missing_str) == 0) {
     missing_str <- "none"
   }
-  if (length(unknown_str) == 0) {
-    unknown_str <- "none"
-  }
 
   message <- sprintf(
-    "%s data frame is not valid. missing columns: %s, unknown columns: %s",
-    name, missing_str, unknown_str
+    "%s data frame is not valid. missing columns: %s", name, missing_str
   )
 
   stop(message)
@@ -277,8 +277,8 @@ check_columns <- function(data_frame, required, optional, name) {
 
 
 compute_fate_load <- function(substances) {
-  degradation <- (substances$`SCI-Grow`
-    / substances$`Reference.SCI-Grow`
+  degradation <- (substances$SCI.Grow
+    / substances$Reference.SCI.Grow
     * substances$Load.Factor.SCI)
 
   bioaccumulation <- (substances$BCF
@@ -371,8 +371,8 @@ compute_toxity_load <- function(substances) {
     0
   )
 
-  degradation_factor_water <- (1 - exp(-log(2) / substances$water.phase.DT50.days * 7)
-  / (log(2) / substances$water.phase.DT50.days * 7))
+  degradation_factor_water <- ((1 - exp((-log(2) / substances$water.phase.DT50.days) * 7))
+                               / (((log(2) / substances$water.phase.DT50.days) * 7)))
 
   substances$Degradation.Factor.Water <- (
     ifelse(substances$water.phase.DT50.days == 0 | substances$water.phase.DT50.days == 708,
@@ -438,8 +438,7 @@ compute_toxity_load <- function(substances) {
 
 
 compute_health_load <- function(products) {
-  products$HL <- (products$formula
-    * products$sum.risk.score
+  products$HL <- (products$formula * products$sum.risk.score
     / products$reference.sum.risk.scores)
 
   return(products)
@@ -448,14 +447,14 @@ compute_health_load <- function(products) {
 
 compute_pesticide_load <- function(products, substances) {
 
-  TL.products <- substances$concentration * substances$Environmental.Toxicity.Substance
-  FL.products <- substances$concentration * substances$Fate.Load.substances
+  TL.product <- substances$concentration * substances$Environmental.Toxicity.Substance
+  FL.product <- substances$concentration * substances$Fate.Load.substances
 
-  TL <- aggregate(TL.products, by = list(products = substances$product), FUN = sum)
-  FL <- aggregate(FL.products, by = list(products = substances$product), FUN = sum)
+  TL <- aggregate(TL.product, by = list(product = substances$product), FUN = sum)
+  FL <- aggregate(FL.product, by = list(product = substances$product), FUN = sum)
 
-  products$TL <- TL$x[TL$products == products$product]
-  products$FL <- FL$x[FL$products == products$product]
+  products$TL <- merge(products, TL, by="product", all.x=TRUE)$x
+  products$FL <- merge(products, FL, by="product", all.x=TRUE)$x
 
   products$L <- products$HL + products$TL + products$FL
 
@@ -464,7 +463,7 @@ compute_pesticide_load <- function(products, substances) {
 
 
 compute_load_index <- function(products) {
-  sti_quotient <- products$amount.applied / products$standard.doses
+  sti_quotient <- products$amount.applied / products$standard.dosage
   load_index <- sti_quotient * products$L
 
   products$STI <- sti_quotient
