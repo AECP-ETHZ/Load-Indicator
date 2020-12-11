@@ -119,6 +119,30 @@ required_columns_substances <- c(
 
 
 
+required_columns_substances_reduced <- c("CAS.number",
+                                  "substance",
+                                  "product",
+                                  "concentration",
+                                  "Load.Factor.SCI",
+                                  "Load.Factor.BCF",
+                                  "Load.Factor.SoilDT50",
+                                  "Load.Factor.Birds",
+                                  "Load.Factor.Mammals",
+                                  "Load.Factor.Fish",
+                                  "Load.Factor.Aquatic.Invertebrates",
+                                  "Load.Factor.Algae",
+                                  "Load.Factor.Aquatic.Plants",
+                                  "Load.Factor.Earthworms",
+                                  "Load.Factor.Bees",
+                                  "Load.Factor.Fish.Chronic",
+                                  "Load.Factor.Aquatic.Invertebrates.Chronic",
+                                  "Load.Factor.Earthworms.Chronic")
+
+
+required_columns_products_reduced <- c("product", "standard.dosage", "Year")
+
+
+
 prepare.substances <- function(substances)
 {
     for (i in 3:length(required_columns_substances)) {
@@ -168,6 +192,9 @@ compute_pesticide_load_indicator <- function(substances, products) {
 #' @export
 
 compute_pesticide_load_indicator_ppdb <- function(substances, products, folder) {
+
+  check_columns(substances, required_columns_substances_reduced, c(), "substances");
+  check_columns(products, required_columns_products_reduced, c(), "products");
 
   tables <- match.ppdb(substances, products, folder)
   substances <- tables$substances

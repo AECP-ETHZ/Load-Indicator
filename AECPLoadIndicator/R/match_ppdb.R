@@ -11,13 +11,27 @@ read.excel <- function(excel_file) {
 
 extend.fate <- function(fate)
 {
+    required <- c(
+                  "LogP",
+                  "SCI.GROW",
+                  "Soil.DT50.typical...days",
+                  "Soil.DT50.lab...days",
+                  "Soil.DT50.notes",
+                  "Water.phase.DT50...days"
+                  )
+
+    missing <- setdiff(required, names(fate))
+    if (length(missing) > 0) {
+        print(names(fate))
+        stop(paste("columns", paste(missing, collapse=", "), "missing in fate table"))
+    }
+
     fate$LogP[is.na(fate$LogP)] <- 0
     fate$LogP<-as.numeric(fate$LogP)
     fate$LogP[is.na(fate$LogP)] <- 0
 
     fate$BCF[fate$LogP >6 & fate$LogP !=0] <- 10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP !=0])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0])-4.72)
     fate$BCF[fate$LogP <6 & fate$LogP !=0]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP !=0])-0.7)
-    fate$BCF[fate$Bioconcentration.Factor!="" & !(is.na(fate$Bioconcentration.Factor))]<-fate$Bioconcentration.Factor[fate$Bioconcentration.Factor!="" & !(is.na(fate$Bioconcentration.Factor))]
     fate$BCF[is.na(fate$BCF)]<-0
     fate$BCF[fate$BCF=="Low risk"]<-0
     fate$BCF<-as.numeric(fate$BCF)
@@ -32,7 +46,7 @@ extend.fate <- function(fate)
     fate$SoilDT50<-rowMeans(x,na.rm=TRUE)
     fate$stable<-ifelse(str_detect(fate$Soil.DT50.notes, "Stable"),1,0)
     fate$Stable<-ifelse(str_detect(fate$Soil.DT50.notes, "stable"),1,0)
-    fate$stable<-fate$stable+fate$Stable
+    fate$stable<-fate$stable + fate$Stable
     fate$SoilDT50[fate$stable!="0"]<-2*354
 
     fate$SoilDT50[fate$SoilDT50==""] <- 0
@@ -41,7 +55,6 @@ extend.fate <- function(fate)
     fate$SoilDT50[fate$SoilDT50>709] <- 0
     fate$SoilDT50 <- as.numeric(fate$SoilDT50)
     fate$SoilDT50[fate$Soil.DT50.notes=="Both iron and phosphate naturally occur in soil. Degradation will be very slow"] <- 0
-
 
     fate$Water.phase.DT50...days[is.na(fate$Water.phase.DT50...days)]<-0
     fate$Water.phase.DT50...days[fate$Water.phase.DT50...days==""]<-0
@@ -56,6 +69,10 @@ extend.fate <- function(fate)
 
 
 compute_R <- function(human) {
+    # EC.Risk.Classification
+    if (!('EC.Risk.Classification' %in% names(human))) {
+        stop('Human table needs column EC.Risk.Classification')
+    }
     R22 <- ifelse(str_detect(human$EC.Risk.Classification, "22"), 10, 0)
     R37 <- ifelse(str_detect(human$EC.Risk.Classification, "37"), 10, 0)
     R38 <- ifelse(str_detect(human$EC.Risk.Classification, "38"), 10, 0)
@@ -97,6 +114,12 @@ compute_R <- function(human) {
 }
 
 compute_HR <- function(human) {
+
+    # CLP.classification.2013
+    if (!('CLP.classification.2013' %in% names(human))) {
+        stop('Human table needs column CLP.classification.2013')
+    }
+
     #If there are two different risk points per H, the higher one has been taken
     #This happened for H300, H314, H330, H310)
     H302 <- ifelse(str_detect(human$CLP.classification.2013, "302"), 10, 0)
@@ -139,6 +162,17 @@ compute_HR <- function(human) {
 
 extend.products.table <- function(products_table, substances_table, human, general)
 {
+    if (!('ID' %in% names(human))) {
+        stop('Human table needs column ID')
+    }
+
+    if (!('CASS.RN' %in% names(general))) {
+        stop('General table needs column "CASS RN"')
+    }
+
+    cas.index <- match("CASS.RN", names(general))
+
+    missing.cas <- c()
     for (irow in 1:nrow(products_table)) {
         sum.risk.score <- 0.0
         products_row = products_table[irow,]
@@ -148,17 +182,17 @@ extend.products.table <- function(products_table, substances_table, human, gener
             substance_row = substances_rows[jrow,]
             CAS = substance_row$CAS.number
             substance = substance_row$substance
-            match = general[which(general[,18] == CAS),]
+            match = general[which(general[,cas.index] == CAS),]
 
             if (nrow(match) == 0) {
-                cat(paste("no entry for CAS", CAS, "\n"))
+                missing.cas <- c(missing.cas, CAS);
+                if (length(missing.cas) < 11)
+                    cat(paste("no entry for CAS", CAS, "\n"))
+                if (length(missing.cas) == 11)
+                    cat("supress missing CAS matches from now on\n\n")
                 next
             }
-            else if (tolower(match$Active) != tolower(substance)) {
-                cat(paste("entry for CAS", CAS, "refers to", match$Active,
-                        "which does not match given substance", substance, "\n"))
-                next
-            }
+
 
             id <- match$ID
             human_row = human[which(human$ID == id),]
@@ -176,23 +210,76 @@ extend.products.table <- function(products_table, substances_table, human, gener
         products_table[irow, "sum.risk.score"] <- sum.risk.score
         products_table[irow, "reference.sum.risk.scores"] <- 350
     }
+
+    # remove duplicates
+    missing.cas <- union(missing.cas, missing.cas)
+    if (length(missing) > 0) {
+        txt <- paste(missing.cas, collapse=", ")
+        cat(paste("\nthe CAS numbers", txt, "caused problems, please fix this\n\n"))
+    }
+
     products_table
 }
 
 
 create.substances.table <- function(input_table, general, fate, ecotox) {
 
+    if (!('CASS.RN' %in% names(general))) {
+        stop('General table needs column "CASS RN"')
+    }
+    cas.index <- match("CASS.RN", names(general))
+
+    required.fate <- c("ID", "SCI.GROW", "Water.phase.DT50...days")
+
+    missing <- setdiff(required.fate, names(fate))
+    if (length(missing) > 0) {
+        stop(paste("columns", paste(missing, collapse=", "), "missing in fate table"))
+    }
+
+    required.ecotox <- c("ID",
+                         "Birds...Acute.LD50.mg.kg",
+                         "Mammals...Acute.Oral.LD50.mg.kg.BW.day",
+                         "Fish...Acute.96hr.LC50.mg.l",
+                         "Aquatic.Invertebrates...Acute.48hr.EC50.mg.l",
+                         "Algae...Acute.72hr.EC50.Growth.mg.l",
+                         "Aquatic.Plants...Acute.7d.EC50.mg.l",
+                         "Earthworms...Acute.14d.LC50.mg.kg",
+                         "Honeybees...Contact.acute.48hr.LD50.ug.per.bee",
+                         "Honeybees...Oral.Acute.48hr.LD50.ug.per.bee",
+                         "Fish...Chronic.21d.NOEC.mg.l",
+                         "Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l",
+                         "Earthworms...Chronic.NOEC..Reproduction.mg.kg")
+
+    missing <- setdiff(required.ecotox, names(ecotox))
+    if (length(missing) > 0) {
+        stop(paste("columns", paste(missing, collapse=", "), "missing in ecotox table"))
+    }
+
     names(input_table)<-make.names(names(input_table))
+
+    required.input <- c("Load.Factor.SCI", "Load.Factor.BCF", "Load.Factor.SoilDT50",
+                        "Load.Factor.Birds", "Load.Factor.Mammals", "Load.Factor.Fish",
+                        "Load.Factor.Aquatic.Invertebrates", "Load.Factor.Algae",
+                        "Load.Factor.Aquatic.Plants", "Load.Factor.Earthworms",
+                        "Load.Factor.Bees", "Load.Factor.Fish.Chronic",
+                        "Load.Factor.Aquatic.Invertebrates.Chronic",
+                        "Load.Factor.Earthworms.Chronic")
+
+    missing <- setdiff(required.input, names(input_table))
+    if (length(missing) > 0) {
+        stop(paste("columns", paste(missing, collapse=", "), "missing in substances table"))
+    }
 
     fate <- extend.fate(fate)
 
     col_names <- required_columns_substances
 
-    result <- data.frame(matrix(NA, nrow = nrow(input_table), ncol = length(col_names)),
+    result <- data.frame(matrix(NA, ncol = length(col_names)),
                         stringsAsFactors=FALSE)
     names(result) <- col_names
 
-    row.count <- 0
+    missing.cas <- c()
+    missing.ecotox <- c()
 
     for (irow in 1:nrow(input_table)) {
         row = input_table[irow,]
@@ -201,15 +288,16 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
         if (CAS == "" || substance == "")
             next
 
-        match = general[which(general[,18] == CAS),]
+        match = general[which(general[, cas.index] == CAS),]
 
         if (nrow(match) == 0) {
-            cat(paste("no entry for CAS", CAS, "\n"))
-            next
-        }
-        else if (tolower(match$Active) != tolower(substance)) {
-            cat(paste("entry for CAS", CAS, "refers to", match$Active,
-                    "which does not match given substance", substance, "\n"))
+            if (!(CAS %in% missing.cas)) {
+                missing.cas <- c(missing.cas, CAS);
+                if (length(missing.cas) < 11)
+                    cat(paste("no entry for CAS", CAS, "\n"))
+                if (length(missing.cas) == 11)
+                    cat("supress missing CAS matches from now on\n\n")
+            }
             next
         }
 
@@ -217,77 +305,100 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 
         fate_row <- fate[which(fate$ID == id),]
         ecotox_row <- ecotox[which(ecotox$ID == id),]
+        for (name in required.ecotox) 
+            if (is.na(ecotox_row[name])) {
+                if (!(CAS %in% missing.ecotox)) {
+                    missing.ecotox <- c(missing.ecotox, CAS);
+                    if (length(missing.ecotox) < 11)
+                        cat(paste("entry", name, "for CAS", CAS, "is NAN in ecotox\n"))
+                    if (length(missing.ecotox) == 11)
+                        cat("supress missing ecotox data from now on\n\n")
+                }
+                next
+            }
 
-        row = c(
+        if (is.na(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee)) {
+            ecotox_honeybees <- ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee
+        }
+        else
+            ecotox_honeybees <-
+            (as.numeric(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee) +
+             as.numeric(ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee)) / 2.0
+
+        new_row <- c(
                 row$substance,
                 row$product,
-                as.numeric(row$concentration),
+                row$concentration,
 
-                as.numeric(fate_row$SCI.GROW),
+                fate_row$SCI.GROW,
                 12.5,
-                as.numeric(row$Load.Factor.SCI),
+                row$Load.Factor.SCI,
 
-                as.numeric(fate_row$BCF),
+                fate_row$BCF,
                 5100,
-                as.numeric(row$Load.Factor.BCF),
+                row$Load.Factor.BCF,
 
-                as.numeric(fate_row$SoilDT50),
+                fate_row$SoilDT50,
                 354,
-                as.numeric(row$Load.Factor.SoilDT50),
+                row$Load.Factor.SoilDT50,
 
-                as.numeric(ecotox_row$Birds...Acute.LD50.mg.kg),
+                ecotox_row$Birds...Acute.LD50.mg.kg,
                 10,
-                as.numeric(row$Load.Factor.Birds),
+                row$Load.Factor.Birds,
 
-                as.numeric(ecotox_row$Mammals...Acute.Oral.LD50.mg.kg.BW.day),
+                ecotox_row$Mammals...Acute.Oral.LD50.mg.kg.BW.day,
                 8,
-                as.numeric(row$Load.Factor.Mammals),
+                row$Load.Factor.Mammals,
 
-                as.numeric(ecotox_row$Fish...Acute.96hr.LC50.mg.l),
+                ecotox_row$Fish...Acute.96hr.LC50.mg.l,
                 0.00021,
-                as.numeric(row$Load.Factor.Fish),
+                row$Load.Factor.Fish,
 
-                as.numeric(ecotox_row$Aquatic.Invertebrates...Acute.48hr.EC50.mg.l),
+                ecotox_row$Aquatic.Invertebrates...Acute.48hr.EC50.mg.l,
                 0.00015,
-                as.numeric(row$Load.Factor.Aquatic.Invertebrates),
+                row$Load.Factor.Aquatic.Invertebrates,
 
-                as.numeric(ecotox_row$Algae...Acute.72hr.EC50.Growth.mg.l),
+                ecotox_row$Algae...Acute.72hr.EC50.Growth.mg.l,
                 0.00002,
-                as.numeric(row$Load.Factor.Algae),
+                row$Load.Factor.Algae,
 
-                as.numeric(ecotox_row$Aquatic.Plants...Acute.7d.EC50.mg.l),
+                ecotox_row$Aquatic.Plants...Acute.7d.EC50.mg.l,
                 0.00035,
-                as.numeric(row$Load.Factor.Aquatic.Plants),
+                row$Load.Factor.Aquatic.Plants,
 
-                as.numeric(ecotox_row$Earthworms...Acute.14d.LC50.mg.kg),
+                ecotox_row$Earthworms...Acute.14d.LC50.mg.kg,
                 1.0,
-                as.numeric(row$Load.Factor.Earthworms),
+                row$Load.Factor.Earthworms,
 
-                (as.numeric(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee) +
-                 as.numeric(ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee)) / 2.0,
+                ecotox_honeybees,
                 0.015,
-                as.numeric(row$Load.Factor.Bees),
+                row$Load.Factor.Bees,
 
-                as.numeric(ecotox_row$Fish...Chronic.21d.NOEC.mg.l),
+                ecotox_row$Fish...Chronic.21d.NOEC.mg.l,
                 0.00015,
-                as.numeric(row$Load.Factor.Fish.Chronic),
+                row$Load.Factor.Fish.Chronic,
 
-                as.numeric(fate_row$Water.phase.DT50...days),
+                fate_row$Water.phase.DT50...days,
 
-                as.numeric(ecotox_row$Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l),
+                ecotox_row$Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l,
                 0.00015,
-                as.numeric(row$Load.Factor.Aquatic.Invertebrates.Chronic),
+                row$Load.Factor.Aquatic.Invertebrates.Chronic,
 
-                as.numeric(ecotox_row$Earthworms...Chronic.NOEC),
+                ecotox_row$Earthworms...Chronic.NOEC..Reproduction.mg.kg,
                 0.8,
-                as.numeric(row$Load.Factor.Earthworms.Chronic)
+                row$Load.Factor.Earthworms.Chronic
                 )
 
-        row.count <- row.count + 1
-        result[row.count,] = row
+        result[nrow(result) + 1, ] <- new_row
 
     }
-    result <- result[seq(1, row.count), ]
+    problematic.cas <- union(missing.cas, missing.ecotox)
+    if (length(problematic.cas) > 0) {
+        txt <- paste(problematic.cas, collapse=", ")
+        cat(paste("\nthe CAS numbers", txt, "caused problems, please fix this\n\n"))
+    }
+
+    result;
 }
 
 
