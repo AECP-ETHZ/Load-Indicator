@@ -257,13 +257,7 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 
     names(input_table)<-make.names(names(input_table))
 
-    required.input <- c("Load.Factor.SCI", "Load.Factor.BCF", "Load.Factor.SoilDT50",
-                        "Load.Factor.Birds", "Load.Factor.Mammals", "Load.Factor.Fish",
-                        "Load.Factor.Aquatic.Invertebrates", "Load.Factor.Algae",
-                        "Load.Factor.Aquatic.Plants", "Load.Factor.Earthworms",
-                        "Load.Factor.Bees", "Load.Factor.Fish.Chronic",
-                        "Load.Factor.Aquatic.Invertebrates.Chronic",
-                        "Load.Factor.Earthworms.Chronic")
+    required.input <- c("substance", "product", "concentration")
 
     missing <- setdiff(required.input, names(input_table))
     if (length(missing) > 0) {
@@ -332,61 +326,61 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 
                 fate_row$SCI.GROW,
                 12.5,
-                row$Load.Factor.SCI,
+                20, # row$Load.Factor.SCI,
 
                 fate_row$BCF,
                 5100,
-                row$Load.Factor.BCF,
+                2.5, # row$Load.Factor.BCF,
 
                 fate_row$SoilDT50,
                 354,
-                row$Load.Factor.SoilDT50,
+                2.5, # row$Load.Factor.SoilDT50,
 
                 ecotox_row$Birds...Acute.LD50.mg.kg,
                 10,
-                row$Load.Factor.Birds,
+                1, # row$Load.Factor.Birds,
 
                 ecotox_row$Mammals...Acute.Oral.LD50.mg.kg.BW.day,
                 8,
-                row$Load.Factor.Mammals,
+                1, # row$Load.Factor.Mammals,
 
                 ecotox_row$Fish...Acute.96hr.LC50.mg.l,
                 0.00021,
-                row$Load.Factor.Fish,
+                30, # row$Load.Factor.Fish,
 
                 ecotox_row$Aquatic.Invertebrates...Acute.48hr.EC50.mg.l,
                 0.00015,
-                row$Load.Factor.Aquatic.Invertebrates,
+                30, # row$Load.Factor.Aquatic.Invertebrates,
 
                 ecotox_row$Algae...Acute.72hr.EC50.Growth.mg.l,
                 0.00002,
-                row$Load.Factor.Algae,
+                3, # row$Load.Factor.Algae,
 
                 ecotox_row$Aquatic.Plants...Acute.7d.EC50.mg.l,
                 0.00035,
-                row$Load.Factor.Aquatic.Plants,
+                3, # row$Load.Factor.Aquatic.Plants,
 
                 ecotox_row$Earthworms...Acute.14d.LC50.mg.kg,
                 1.0,
-                row$Load.Factor.Earthworms,
+                2, # row$Load.Factor.Earthworms,
 
                 ecotox_honeybees,
                 0.015,
-                row$Load.Factor.Bees,
+                100, # row$Load.Factor.Bees,
 
                 ecotox_row$Fish...Chronic.21d.NOEC.mg.l,
                 0.00015,
-                row$Load.Factor.Fish.Chronic,
+                3, # row$Load.Factor.Fish.Chronic,
 
                 fate_row$Water.phase.DT50...days,
 
                 ecotox_row$Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l,
                 0.00015,
-                row$Load.Factor.Aquatic.Invertebrates.Chronic,
+                3, # row$Load.Factor.Aquatic.Invertebrates.Chronic,
 
                 ecotox_row$Earthworms...Chronic.NOEC..Reproduction.mg.kg,
                 0.8,
-                row$Load.Factor.Earthworms.Chronic
+                2 # row$Load.Factor.Earthworms.Chronic
                 )
 
         result[nrow(result) + 1, ] <- new_row
