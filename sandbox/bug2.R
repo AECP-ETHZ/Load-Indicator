@@ -1,4 +1,4 @@
-library(AECPLoadIndicator)
+library(PesticideLoadIndicator)
 
 products <- read.table("za_products_empty.csv", sep=";", dec=",", head=TRUE)
 substances <- read.table("za_substance_empty.csv", sep=";", dec=",", head=TRUE, fileEncoding="latin1")

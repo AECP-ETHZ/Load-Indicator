@@ -413,10 +413,12 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 
 match.ppdb <- function(substances, products, folder) {
 
-    human <- read.excel(file.path(folder, "Human.xlsx"))
-    general <- read.excel(file.path(folder, "General.xlsx"))
-    fate <- read.excel(file.path(folder, "Fate.xlsx"))
-    ecotox <- read.excel(file.path(folder, "Ecotox.xlsx"))
+    suppressWarnings({
+        human <- read.excel(file.path(folder, "Human.xlsx"))
+        general <- read.excel(file.path(folder, "General.xlsx"))
+        fate <- read.excel(file.path(folder, "Fate.xlsx"))
+        ecotox <- read.excel(file.path(folder, "Ecotox.xlsx"))
+    })
 
     products <- extend.products.table(products, substances, human, general)
     substances <- create.substances.table(substances, general, fate, ecotox)

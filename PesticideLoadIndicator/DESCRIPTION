@@ -1,4 +1,4 @@
-Package: AECPLoadIndicator
+Package: PesticideLoadIndicator
 Title: Computes Danish Pesticide Load Indicator
 Version: 0.0.1
 Authors@R: c(

@@ -1,4 +1,4 @@
-library(AECPLoadIndicator)
+library(PesticideLoadIndicator)
 
 
 products <- read.table("za_products.csv", sep=";", dec=",", head=TRUE)

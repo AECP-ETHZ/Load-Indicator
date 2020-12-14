@@ -1,1 +1,1 @@
-RScript -e 'library(devtools); devtools::test("AECPLoadIndicator")'
+RScript -e 'library(devtools); devtools::test("PesticideLoadIndicator")'
