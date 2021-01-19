@@ -210,13 +210,13 @@ extend.products.table <- function(products_table, substances_table, human, gener
                 next
             }
             if (products_row$Year <= 2012) {
-                sum.risk.score <- sum.risk.score + compute_R(human_row)
+                sum.risk.score <- c(sum.risk.score ,compute_R(human_row))
             }
             else {
-                sum.risk.score <- sum.risk.score + compute_HR(human_row)
+                sum.risk.score <- c(sum.risk.score, compute_HR(human_row))
             }
         }
-        products_table[irow, "sum.risk.score"] <- sum.risk.score
+        products_table[irow, "sum.risk.score"] <- max(sum.risk.score, na.rm=T)
         products_table[irow, "reference.sum.risk.scores"] <- 350
     }
 
