@@ -9,30 +9,43 @@ read.excel <- function(excel_file) {
 }
 
 
-extend.fate <- function(fate)
+extend.fate <- function(fate,ecotox)
 {
-    required <- c(
+    required_f <- c(
                   "LogP",
                   "SCI.GROW",
                   "Soil.DT50.typical...days",
                   "Soil.DT50.lab...days",
                   "Soil.DT50.notes",
                   "Water.phase.DT50...days",
-                  "Active"
+                  "Active",
+                  "ID"
                   )
 
-    missing <- setdiff(required, names(fate))
+    missing_f <- setdiff(required_f, names(fate))
     if (length(missing) > 0) {
         print(names(fate))
         stop(paste("columns", paste(missing, collapse=", "), "missing in fate table"))
+    }
+    
+     required_eco <- c(
+                  "Bioconcentration.Factor"
+                  "ID"
+                  )
+
+    missing_eco <- setdiff(required_eco, names(ecotox))
+    if (length(missing) > 0) {
+        print(names(ecotox))
+        stop(paste("columns", paste(missing, collapse=", "), "missing in ecotox table"))
     }
 
     fate$LogP[is.na(fate$LogP)] <- 0
     fate$LogP<-as.numeric(fate$LogP)
     fate$LogP[is.na(fate$LogP)] <- 0
-
-    fate$BCF[fate$LogP >6 & fate$LogP !=0] <- 10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP !=0])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0])-4.72)
-    fate$BCF[fate$LogP <6 & fate$LogP !=0]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP !=0])-0.7)
+    
+    fate$BCF[fate$ID==ecotox$ID]<- as.numeric(ecotox$Bioconcentration.Factor[fate$ID==ecotox$ID])
+    fate$BCF[fate$LogP >6 & fate$LogP !=0 & (is.na(fate$BCF) | fate$BCF ==0)] <- 10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP !=0 & (is.na(fate$BCF) | fate$BCF ==0)])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0 & (is.na(fate$BCF) | fate$BCF ==0)])-4.72)
+    fate$BCF[fate$LogP <6 & fate$LogP !=0 & (is.na(fate$BCF) | fate$BCF ==0)]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP !=0 & (is.na(fate$BCF) | fate$BCF ==0)])-0.7)
     fate$BCF[is.na(fate$BCF)]<-0
     fate$BCF[fate$BCF=="Low risk"]<-0
     fate$BCF<-as.numeric(fate$BCF)
@@ -75,6 +88,7 @@ extend.fate <- function(fate)
     fate
 
 }
+
 
 
 compute_R <- function(human) {
@@ -257,7 +271,8 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
                          "Honeybees...Oral.Acute.48hr.LD50.ug.per.bee",
                          "Fish...Chronic.21d.NOEC.mg.l",
                          "Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l",
-                         "Earthworms...Chronic.NOEC..Reproduction.mg.kg")
+                         "Earthworms...Chronic.NOEC..Reproduction.mg.kg",
+                         "Bioconcentration.Factor")
 
     missing <- setdiff(required.ecotox, names(ecotox))
     if (length(missing) > 0) {
