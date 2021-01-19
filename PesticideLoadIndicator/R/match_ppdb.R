@@ -288,7 +288,7 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
         stop(paste("columns", paste(missing, collapse=", "), "missing in substances table"))
     }
 
-    fate <- extend.fate(fate)
+    fate <- extend.fate(fate,ecotox)
 
     col_names <- required_columns_substances
 
