@@ -17,7 +17,8 @@ extend.fate <- function(fate)
                   "Soil.DT50.typical...days",
                   "Soil.DT50.lab...days",
                   "Soil.DT50.notes",
-                  "Water.phase.DT50...days"
+                  "Water.phase.DT50...days",
+                  "Active"
                   )
 
     missing <- setdiff(required, names(fate))
@@ -55,7 +56,15 @@ extend.fate <- function(fate)
     fate$SoilDT50[fate$SoilDT50>709] <- 0
     fate$SoilDT50 <- as.numeric(fate$SoilDT50)
     fate$SoilDT50[fate$Soil.DT50.notes=="Both iron and phosphate naturally occur in soil. Degradation will be very slow"] <- 0
+    fate$SoilDT50[str_detect(fate$Active, "Copper")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "copper")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "Sulphur")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "sulphur")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "Iron")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "iron")]<-0
 
+    
+    
     fate$Water.phase.DT50...days[is.na(fate$Water.phase.DT50...days)]<-0
     fate$Water.phase.DT50...days[fate$Water.phase.DT50...days==""]<-0
     fate$Water.phase.DT50...days[fate$Water.phase.DT50...days=="<1"]<-0.5
@@ -229,7 +238,7 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
     }
     cas.index <- match("CASS.RN", names(general))
 
-    required.fate <- c("ID", "SCI.GROW", "Water.phase.DT50...days")
+    required.fate <- c("ID", "SCI.GROW", "Water.phase.DT50...days","Active")
 
     missing <- setdiff(required.fate, names(fate))
     if (length(missing) > 0) {
@@ -316,8 +325,8 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
         }
         else
             ecotox_honeybees <-
-            (as.numeric(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee) +
-             as.numeric(ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee)) / 2.0
+            mean(c(as.numeric(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee),
+             as.numeric(ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee)),na.rm=T)
 
         new_row <- c(
                 row$substance,
