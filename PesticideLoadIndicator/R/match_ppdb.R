@@ -29,7 +29,7 @@ extend.fate <- function(fate,ecotox)
     }
     
      required_eco <- c(
-                  "Bioconcentration.Factor"
+                  "Bioconcentration.Factor",
                   "ID"
                   )
 
