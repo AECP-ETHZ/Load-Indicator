@@ -23,9 +23,9 @@ extend.fate <- function(fate,ecotox)
                   )
 
     missing_f <- setdiff(required_f, names(fate))
-    if (length(missing) > 0) {
+    if (length(missing_f) > 0) {
         print(names(fate))
-        stop(paste("columns", paste(missing, collapse=", "), "missing in fate table"))
+        stop(paste("columns", paste(missing_f, collapse=", "), "missing in fate table"))
     }
     
      required_eco <- c(
@@ -34,9 +34,9 @@ extend.fate <- function(fate,ecotox)
                   )
 
     missing_eco <- setdiff(required_eco, names(ecotox))
-    if (length(missing) > 0) {
+    if (length(missing_eco) > 0) {
         print(names(ecotox))
-        stop(paste("columns", paste(missing, collapse=", "), "missing in ecotox table"))
+        stop(paste("columns", paste(missing_eco, collapse=", "), "missing in ecotox table"))
     }
 
     fate$LogP[is.na(fate$LogP)] <- 0
