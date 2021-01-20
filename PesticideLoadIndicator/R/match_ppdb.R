@@ -45,13 +45,15 @@ extend.fate <- function(fate,ecotox)
     
     eco<- ecotox[,required_eco]
     fate<- merge(fate,eco,by= "ID")
-    fate$BCF<- fate$Bioconcentration.Factor
-    fate$BCF[fate$BCF=="Low risk"]<-0
-    fate$BCF<-as.numeric(fate$BCF)
-    fate$BCF[fate$LogP >6 & fate$LogP !=0  & is.na(fate$BCF)] <- 10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP ==0 &  is.na(fate$BCF) ])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0 & is.na(fate$BCF) ])-4.72)
-    fate$BCF[fate$LogP <6 & fate$LogP !=0  & is.na(fate$BCF)]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP ==0 & is.na(fate$BCF) ])-0.7)
+
+    fate$BCF[fate$LogP >6 & fate$LogP !=0]<-10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP !=0])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0])-4.72)
+    fate$BCF[fate$LogP <6 & fate$LogP !=0]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP !=0])-0.7)
+    fate$BCF[fate$Bioconcentration.Factor!="" & !(is.na(fate$Bioconcentration.Factor))]<-fate$Bioconcentration.Factor[fate$Bioconcentration.Factor!="" & !(is.na(fate$Bioconcentration.Factor))]
     fate$BCF[is.na(fate$BCF)]<-0
-    fate$BCF[fate$BCF>5100]<-5100
+    fate$BCF[fate$BCF=="Low risk"]<-0
+    suppressWarnings(fate$BCF<-as.numeric(fate$BCF))
+    fate$BCF[is.na(fate$BCF)]<-0
+    fate$BCF[fate$BCF>5100]<-5100 
 
     fate$SCI.GROW[fate$SCI.GROW=="Cannot be calculated"] <- 0
     fate$SCI.GROW[is.na(fate$SCI.GROW)] <- 0
