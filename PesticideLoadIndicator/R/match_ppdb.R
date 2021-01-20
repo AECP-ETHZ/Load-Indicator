@@ -48,8 +48,8 @@ extend.fate <- function(fate,ecotox)
     fate$BCF<- fate$Bioconcentration.Factor
     fate$BCF[fate$BCF=="Low risk"]<-0
     fate$BCF<-as.numeric(fate$BCF)
-    fate$BCF[fate$LogP >6 & fate$LogP !=0 & fate$Bioconcentration.Factor!="Low risk" & (is.na(fate$BCF) | fate$BCF ==0)] <- 10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP ==0 & fate$Bioconcentration.Factor!="Low risk" & (is.na(fate$BCF) | fate$BCF ==0)])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0 & fate$Bioconcentration.Factor!="Low risk" & (is.na(fate$BCF) | fate$BCF ==0)])-4.72)
-    fate$BCF[fate$LogP <6 & fate$LogP !=0 & fate$Bioconcentration.Factor!="Low risk" & (is.na(fate$BCF) | fate$BCF ==0)]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP ==0 & fate$Bioconcentration.Factor!="Low risk" & (is.na(fate$BCF) | fate$BCF ==0)])-0.7)
+    fate$BCF[fate$LogP >6 & fate$LogP !=0  & is.na(fate$BCF)] <- 10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP ==0 &  is.na(fate$BCF) ])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0 & is.na(fate$BCF) ])-4.72)
+    fate$BCF[fate$LogP <6 & fate$LogP !=0  & is.na(fate$BCF)]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP ==0 & is.na(fate$BCF) ])-0.7)
     fate$BCF[is.na(fate$BCF)]<-0
     fate$BCF[fate$BCF>5100]<-5100
 
