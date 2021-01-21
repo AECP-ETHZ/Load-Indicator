@@ -9,33 +9,51 @@ read.excel <- function(excel_file) {
 }
 
 
-extend.fate <- function(fate)
+extend.fate <- function(fate,ecotox)
 {
-    required <- c(
+    required_f <- c(
                   "LogP",
                   "SCI.GROW",
                   "Soil.DT50.typical...days",
                   "Soil.DT50.lab...days",
                   "Soil.DT50.notes",
-                  "Water.phase.DT50...days"
+                  "Water.phase.DT50...days",
+                  "Active",
+                  "ID"
                   )
 
-    missing <- setdiff(required, names(fate))
-    if (length(missing) > 0) {
+    missing_f <- setdiff(required_f, names(fate))
+    if (length(missing_f) > 0) {
         print(names(fate))
-        stop(paste("columns", paste(missing, collapse=", "), "missing in fate table"))
+        stop(paste("columns", paste(missing_f, collapse=", "), "missing in fate table"))
+    }
+    
+     required_eco <- c(
+                  "Bioconcentration.Factor",
+                  "ID"
+                  )
+
+    missing_eco <- setdiff(required_eco, names(ecotox))
+    if (length(missing_eco) > 0) {
+        print(names(ecotox))
+        stop(paste("columns", paste(missing_eco, collapse=", "), "missing in ecotox table"))
     }
 
     fate$LogP[is.na(fate$LogP)] <- 0
     fate$LogP<-as.numeric(fate$LogP)
     fate$LogP[is.na(fate$LogP)] <- 0
+    
+    eco<- ecotox[,required_eco]
+    fate<- merge(fate,eco,by= "ID")
 
-    fate$BCF[fate$LogP >6 & fate$LogP !=0] <- 10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP !=0])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0])-4.72)
+    fate$BCF[fate$LogP >6 & fate$LogP !=0]<-10^((-0.2*fate$LogP[fate$LogP >6 & fate$LogP !=0])+(2.74*fate$LogP[fate$LogP >6 & fate$LogP !=0])-4.72)
     fate$BCF[fate$LogP <6 & fate$LogP !=0]<-10^((0.86*fate$LogP[fate$LogP <6 & fate$LogP !=0])-0.7)
+    fate$BCF[fate$Bioconcentration.Factor!="" & !(is.na(fate$Bioconcentration.Factor))]<-fate$Bioconcentration.Factor[fate$Bioconcentration.Factor!="" & !(is.na(fate$Bioconcentration.Factor))]
     fate$BCF[is.na(fate$BCF)]<-0
     fate$BCF[fate$BCF=="Low risk"]<-0
-    fate$BCF<-as.numeric(fate$BCF)
-    fate$BCF[fate$BCF>5100]<-5100
+    suppressWarnings(fate$BCF<-as.numeric(fate$BCF))
+    fate$BCF[is.na(fate$BCF)]<-0
+    fate$BCF[fate$BCF>5100]<-5100 
 
     fate$SCI.GROW[fate$SCI.GROW=="Cannot be calculated"] <- 0
     fate$SCI.GROW[is.na(fate$SCI.GROW)] <- 0
@@ -55,7 +73,15 @@ extend.fate <- function(fate)
     fate$SoilDT50[fate$SoilDT50>709] <- 0
     fate$SoilDT50 <- as.numeric(fate$SoilDT50)
     fate$SoilDT50[fate$Soil.DT50.notes=="Both iron and phosphate naturally occur in soil. Degradation will be very slow"] <- 0
+    fate$SoilDT50[str_detect(fate$Active, "Copper")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "copper")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "Sulphur")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "sulphur")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "Iron")]<-0
+    fate$SoilDT50[str_detect(fate$Active, "iron")]<-0
 
+    
+    
     fate$Water.phase.DT50...days[is.na(fate$Water.phase.DT50...days)]<-0
     fate$Water.phase.DT50...days[fate$Water.phase.DT50...days==""]<-0
     fate$Water.phase.DT50...days[fate$Water.phase.DT50...days=="<1"]<-0.5
@@ -66,6 +92,7 @@ extend.fate <- function(fate)
     fate
 
 }
+
 
 
 compute_R <- function(human) {
@@ -201,13 +228,13 @@ extend.products.table <- function(products_table, substances_table, human, gener
                 next
             }
             if (products_row$Year <= 2012) {
-                sum.risk.score <- sum.risk.score + compute_R(human_row)
+                sum.risk.score <- c(sum.risk.score ,compute_R(human_row))
             }
             else {
-                sum.risk.score <- sum.risk.score + compute_HR(human_row)
+                sum.risk.score <- c(sum.risk.score, compute_HR(human_row))
             }
         }
-        products_table[irow, "sum.risk.score"] <- sum.risk.score
+        products_table[irow, "sum.risk.score"] <- max(sum.risk.score, na.rm=T)
         products_table[irow, "reference.sum.risk.scores"] <- 350
     }
 
@@ -229,7 +256,7 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
     }
     cas.index <- match("CASS.RN", names(general))
 
-    required.fate <- c("ID", "SCI.GROW", "Water.phase.DT50...days")
+    required.fate <- c("ID", "SCI.GROW", "Water.phase.DT50...days","Active")
 
     missing <- setdiff(required.fate, names(fate))
     if (length(missing) > 0) {
@@ -248,7 +275,8 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
                          "Honeybees...Oral.Acute.48hr.LD50.ug.per.bee",
                          "Fish...Chronic.21d.NOEC.mg.l",
                          "Aquatic.Invertebrates...Chronic.21d.NOEC.mg.l",
-                         "Earthworms...Chronic.NOEC..Reproduction.mg.kg")
+                         "Earthworms...Chronic.NOEC..Reproduction.mg.kg",
+                         "Bioconcentration.Factor")
 
     missing <- setdiff(required.ecotox, names(ecotox))
     if (length(missing) > 0) {
@@ -264,7 +292,7 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
         stop(paste("columns", paste(missing, collapse=", "), "missing in substances table"))
     }
 
-    fate <- extend.fate(fate)
+    fate <- extend.fate(fate,ecotox)
 
     col_names <- required_columns_substances
 
@@ -316,8 +344,8 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
         }
         else
             ecotox_honeybees <-
-            (as.numeric(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee) +
-             as.numeric(ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee)) / 2.0
+            mean(c(as.numeric(ecotox_row$Honeybees...Contact.acute.48hr.LD50.ug.per.bee),
+             as.numeric(ecotox_row$Honeybees...Oral.Acute.48hr.LD50.ug.per.bee)),na.rm=T)
 
         new_row <- c(
                 row$substance,
