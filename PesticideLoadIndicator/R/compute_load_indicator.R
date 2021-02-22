@@ -1,11 +1,7 @@
-# 19.01.2021
-# Niklas Moehring and Leonie Vidensky
-# Agricultural Economics and Policy Group, Eth Zurich
-
-
-# Calclulating the Danish Pesticide Load Indicator
-# (Kudsk et al., 2018; Moehring et al., 2019)
-# with three example products from Switzerland
+#' Computing the Pesticide Load Indicator for pesticide application data
+#' The provided functions will compute the Pesticide Load Indicator (PLI) as described in Kudsk et al. (2018) for pesticide application data provided by the user.
+#' Computing the PLI requires information on applied pesticides in a table format, as well as information on fate, ecotoxicity and human health properties of applied pesticide products, as provided in the Pesticide Properties Database (PPDB) of the University of Hertfordshire. See below for a detailed description.
+#' The PLI can either be computed using user supplied information on pesticide properties or by automatically including the information based on the PPDB. Access to the PPDb requires a license - see http://sitem.herts.ac.uk/aeru/ppdb/.
 
 #' @importFrom stats aggregate
 
@@ -153,11 +149,11 @@ prepare.substances <- function(substances)
 }
 
 
-#' @title Compute Pesticide Load Indicator
+#' @title Compute Pesticide Load Indicator with user supplied information on pesticide properties
 #'
-#' @param substances Dataframe with substance data
-#' @param products Dataframe with products data
-#' @return products Dataframe with added columns
+#' @param products Dataframe with raw pesticide application data.
+#' @param substances Dataframe describing active ingredients of the applied pesticide products, including their ecotoxicity, fate and human health properties.
+#' @return products Pesticide application dataframe with pesticide indicator columns added.
 #'
 #' @export
 
@@ -182,12 +178,12 @@ compute_pesticide_load_indicator <- function(substances, products) {
 }
 
 
-#' @title Compute Pesticide Load Indicator with PPDB match
+#' @title Compute Pesticide Load Indicator using the Pesticide Properties database
 #'
-#' @param substances Dataframe with substance data
-#' @param products Dataframe with products data
-#' @param folder folder with exported xlsx files from PPDB
-#' @return products Dataframe with added columns
+#' @param products Dataframe with raw pesticide application data.
+#' @param substances Dataframe describing active ingredients of the applied pesticide products and their CAS number.
+#' @param folder Folder with exported xlsx files from PPDB containing information on active ingredient properties.
+#' @return products Pesticide application dataframe with pesticide indicator columns added.
 #'
 #' @export
 
@@ -203,17 +199,17 @@ compute_pesticide_load_indicator_ppdb <- function(substances, products, folder) 
   return(compute_pesticide_load_indicator(substances, products))
 }
 
-#' @title Compute Pesticide Load Indicator with PPDB match
+#' @title Compute Pesticide Load Indicator for a single application using the Pesticide Properties database
 #'
-#' @param folder folder with exported xlsx files from PPDB
-#' @param product product name
-#' @param year year
-#' @param formula formulation
-#' @param substances list or vector of substance names
-#' @param cas_numbers list or vector of CAS numbers
-#' @param concentrations list or vector of concentrations
-#' @param ... overrides for default load factors
-#' @return products Dataframe with computed pestice loads
+#' @param folder Folder with exported xlsx files from PPDB containing information on active ingredient properties.
+#' @param product Product name of the applied pesticide. 
+#' @param year Application year.
+#' @param formula Load formulation factor for applied product.
+#' @param substances List or vector of active ingredient names of the applied pesticide.
+#' @param cas_numbers List or vector of CAS numbers of the respective active ingredients.
+#' @param concentrations List or vector of product concentrations of the respective active ingredients.
+#' @param ... overrides for default Load factors.
+#' @return products Dataframe with computed pestice Loads.
 #'
 #' @export
 
@@ -241,9 +237,9 @@ compute_pesticide_load_indicator_single <- function(folder, product, year, formu
 }
 
 
-#' @title Check if column names of substances are valid
+#' @title Check if column names of substances dataframe are valid
 #'
-#' @param substances Dataframe with substance data
+#' @param substances Dataframe describing active ingredients of the applied pesticide products.
 #'
 #' @export
 
@@ -256,9 +252,9 @@ check_substance_column_names <- function(substances)
 }
 
 
-#' @title Check if column names of products are valid
+#' @title Check if column names of applied pesticide products dataframe are valid
 #'
-#' @param products Dataframe with substance data
+#' @param products Dataframe with raw pesticide application data.
 #'
 #' @export
 
