@@ -424,12 +424,12 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 }
 
 
-#' @title Extend tables by data from PPDB
+#' @title Expend tables with information on ecotoxicity, fate and human health properties from PPDB
 #'
-#' @param substances Dataframe with substance data
-#' @param products Dataframe with products data
-#' @param folder folder with exported xlsx files from PPDB
-#' @return names lists with updated substances and products data frames
+#' @param products Dataframe with raw pesticide application data.
+#' @param substances Dataframe describing active ingredients of the applied pesticide products and their CAS number.
+#' @param folder Folder with exported xlsx files from PPDB containing information on active ingredient properties.
+#' @return names Lists with updated substance and product data frames.
 #'
 #' @export
 
