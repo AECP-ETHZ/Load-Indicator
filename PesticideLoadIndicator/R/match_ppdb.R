@@ -27,7 +27,7 @@ extend.fate <- function(fate,ecotox)
         print(names(fate))
         stop(paste("columns", paste(missing_f, collapse=", "), "missing in fate table"))
     }
-    
+
      required_eco <- c(
                   "Bioconcentration.Factor",
                   "ID"
@@ -42,7 +42,7 @@ extend.fate <- function(fate,ecotox)
     fate$LogP[is.na(fate$LogP)] <- 0
     fate$LogP<-as.numeric(fate$LogP)
     fate$LogP[is.na(fate$LogP)] <- 0
-    
+
     eco<- ecotox[,required_eco]
     fate<- merge(fate,eco,by= "ID")
 
@@ -53,7 +53,7 @@ extend.fate <- function(fate,ecotox)
     fate$BCF[fate$BCF=="Low risk"]<-0
     suppressWarnings(fate$BCF<-as.numeric(fate$BCF))
     fate$BCF[is.na(fate$BCF)]<-0
-    fate$BCF[fate$BCF>5100]<-5100 
+    fate$BCF[fate$BCF>5100]<-5100
 
     fate$SCI.GROW[fate$SCI.GROW=="Cannot be calculated"] <- 0
     fate$SCI.GROW[is.na(fate$SCI.GROW)] <- 0
@@ -80,8 +80,8 @@ extend.fate <- function(fate,ecotox)
     fate$SoilDT50[str_detect(fate$Active, "Iron")]<-0
     fate$SoilDT50[str_detect(fate$Active, "iron")]<-0
 
-    
-    
+
+
     fate$Water.phase.DT50...days[is.na(fate$Water.phase.DT50...days)]<-0
     fate$Water.phase.DT50...days[fate$Water.phase.DT50...days==""]<-0
     fate$Water.phase.DT50...days[fate$Water.phase.DT50...days=="<1"]<-0.5
@@ -327,7 +327,7 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
 
         fate_row <- fate[which(fate$ID == id),]
         ecotox_row <- ecotox[which(ecotox$ID == id),]
-        for (name in required.ecotox) 
+        for (name in required.ecotox)
             if (is.na(ecotox_row[name])) {
                 if (!(CAS %in% missing.ecotox)) {
                     missing.ecotox <- c(missing.ecotox, CAS);
