@@ -239,7 +239,9 @@ compute_pesticide_load_indicator_single <- function(folder, product, year, formu
 
 #' @title Check if column names of substances dataframe are valid
 #'
+#' @description checks for valid colum names and stops execution if problems are detected
 #' @param substances Dataframe describing active ingredients of the applied pesticide products.
+#' @return No return value
 #'
 #' @export
 
@@ -254,7 +256,9 @@ check_substance_column_names <- function(substances)
 
 #' @title Check if column names of applied pesticide products dataframe are valid
 #'
+#' @description checks for valid colum names and stops execution if problems are detected
 #' @param products Dataframe with raw pesticide application data.
+#' @return No return value
 #'
 #' @export
 
@@ -277,11 +281,11 @@ check_columns <- function(data_frame, required, optional, name) {
   found_columns <- names(data_frame)
 
   if (.is.superset(found_columns, required)) {
-    return(data_frame)
+    return()
   }
 
   if (.is.superset(found_columns, union(required, optional))) {
-    return(data_frame)
+    return()
   }
 
   missing <- setdiff(required, found_columns)
