@@ -24,7 +24,6 @@ extend.fate <- function(fate,ecotox)
 
     missing_f <- setdiff(required_f, names(fate))
     if (length(missing_f) > 0) {
-        print(names(fate))
         stop(paste("columns", paste(missing_f, collapse=", "), "missing in fate table"))
     }
 
@@ -35,7 +34,6 @@ extend.fate <- function(fate,ecotox)
 
     missing_eco <- setdiff(required_eco, names(ecotox))
     if (length(missing_eco) > 0) {
-        print(names(ecotox))
         stop(paste("columns", paste(missing_eco, collapse=", "), "missing in ecotox table"))
     }
 
@@ -214,9 +212,9 @@ extend.products.table <- function(products_table, substances_table, human, gener
             if (nrow(match) == 0) {
                 missing.cas <- c(missing.cas, CAS);
                 if (length(missing.cas) < 11)
-                    cat(paste("no entry for CAS", CAS, "\n"))
+                    warning(paste("no entry for CAS", CAS, "\n"))
                 if (length(missing.cas) == 11)
-                    cat("supress missing CAS matches from now on\n\n")
+                    warning("supress missing CAS matches from now on\n\n")
                 next
             }
 
@@ -224,7 +222,7 @@ extend.products.table <- function(products_table, substances_table, human, gener
             id <- match$ID
             human_row = human[which(human$ID == id),]
             if (nrow(human_row) == 0) {
-                cat(paste("no entry for human risk for id", id, "\n"))
+                warning(paste("no entry for human risk for id", id, "\n"))
                 next
             }
             if (products_row$Year <= 2012) {
@@ -242,7 +240,7 @@ extend.products.table <- function(products_table, substances_table, human, gener
     missing.cas <- union(missing.cas, missing.cas)
     if (length(missing) > 0) {
         txt <- paste(missing.cas, collapse=", ")
-        cat(paste("\nthe CAS numbers", txt, "caused problems, please fix this\n\n"))
+        warning(paste("\nthe CAS numbers", txt, "caused problems, please fix this\n\n"))
     }
 
     products_table
@@ -316,9 +314,9 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
             if (!(CAS %in% missing.cas)) {
                 missing.cas <- c(missing.cas, CAS);
                 if (length(missing.cas) < 11)
-                    cat(paste("no entry for CAS", CAS, "\n"))
+                    warning(paste("no entry for CAS", CAS, "\n"))
                 if (length(missing.cas) == 11)
-                    cat("supress missing CAS matches from now on\n\n")
+                    message("supress missing CAS matches from now on\n\n")
             }
             next
         }
@@ -332,9 +330,9 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
                 if (!(CAS %in% missing.ecotox)) {
                     missing.ecotox <- c(missing.ecotox, CAS);
                     if (length(missing.ecotox) < 11)
-                        cat(paste("entry", name, "for CAS", CAS, "is NAN in ecotox\n"))
+                        warning(paste("entry", name, "for CAS", CAS, "is NAN in ecotox\n"))
                     if (length(missing.ecotox) == 11)
-                        cat("supress missing ecotox data from now on\n\n")
+                        message("supress missing ecotox data from now on\n\n")
                 }
                 next
             }
@@ -417,7 +415,7 @@ create.substances.table <- function(input_table, general, fate, ecotox) {
     problematic.cas <- union(missing.cas, missing.ecotox)
     if (length(problematic.cas) > 0) {
         txt <- paste(problematic.cas, collapse=", ")
-        cat(paste("\nthe CAS numbers", txt, "caused problems, please fix this\n\n"))
+        warning(paste("\nthe CAS numbers", txt, "caused problems, please fix this\n\n"))
     }
 
     result;
