@@ -160,7 +160,7 @@ prepare.substances <- function(substances)
 #' substances_user <- substances.load() # load the (user-supplied) dataframe with detailed information on used pesticides (active substances, concentrations and their properties). 
 #' 
 #' indicators_user <- compute_pesticide_load_indicator(substances = substances_user, products= products_user) # Compute the Pesticide Load Indicator and its sub-indicators using the user supplied data.
-#' #' }
+#' }
 #' @export
 
 compute_pesticide_load_indicator <- function(substances, products) {
@@ -204,7 +204,7 @@ compute_pesticide_load_indicator <- function(substances, products) {
 #' folder <- "path" # indicate the folder in which the "General","Fate", "Human" and "Ecotox" tables of the Pesticides Properties database have been saved as Excel files (under the exact same name, e.g. Human.xlsx). Attention, this step requires a licensed access to the Pesticide Properties Database provided by the University of Hertfordshire.Note that the "Fate" table should include a column indicating the "SCI.GROW" values.
 #'       
 #' indicators_ppdb  <- compute_pesticide_load_indicator_ppdb(substances = substances_ppdb, products= products_ppdb, folder=folder) # Compute the Pesticide Load Indicator and its sub-indicators using the user supplied data.
-#' #' }
+#' }
 #' @export
 
 
@@ -231,8 +231,12 @@ compute_pesticide_load_indicator_ppdb <- function(substances, products, folder) 
 #' @param cas_numbers List or vector of CAS numbers of the respective active ingredients.
 #' @param concentrations List or vector of product concentrations of the respective active ingredients.
 #' @param ... overrides for default Load factors.
-#' @return products Dataframe with computed pestice Loads.
-#'
+#' @return products Dataframe with computed pesticide indicators.
+#' @examples 
+#' \dontrun{
+#' folder <- "path" # indicate the folder in which the "General","Fate", "Human" and "Ecotox" tables of the Pesticides Properties database have been saved as Excel files (under the exact same name, e.g. Human.xlsx). Attention, this step requires a licensed access to the Pesticide Properties Database provided by the University of Hertfordshire.Note that the "Fate" table should include a column indicating the "SCI.GROW" values.
+#' compute_pesticide_load_indicator_single(folder = folder,product = "Agora",year = 2009,formula = 1.5,substances=c("Cyproconazol","Trifloxystrobin"),cas_numbers = c("94361-06-5","141517-21-7"),concentrations = c(0.08,0.1875)) # compute the Pesticide Load indicator and its subindicators for a single product. Allows to optionally alter the predefined Load.Values.
+#' }
 #' @export
 
 compute_pesticide_load_indicator_single <- function(folder, product, year, formula,
@@ -242,6 +246,7 @@ compute_pesticide_load_indicator_single <- function(folder, product, year, formu
     products <- data.frame(product=product,
                            Year=year,
                            crop="",
+                           standard.dosage="",
                            formula=formula)
 
     substances <- data.frame(CAS.number=cas_numbers,
