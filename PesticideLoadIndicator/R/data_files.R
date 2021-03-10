@@ -3,7 +3,6 @@
 #' @return path to substances.xlsx file
 #'
 #' @export
-#
 substances.path <- function() system.file("extdata", "substances.xlsx", package = "PesticideLoadIndicator", mustWork=TRUE);
 
 #' @title load included substances.xlsx file
@@ -17,8 +16,6 @@ substances.load <- function() read.excel(substances.path());
 #'
 #' @return path to products.xlsx file
 #'
-#' @export
-#
 #' @export
 products.path <- function() system.file("extdata", "products.xlsx", package = "PesticideLoadIndicator", mustWork=TRUE);
 
