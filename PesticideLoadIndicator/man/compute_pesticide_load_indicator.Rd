@@ -12,7 +12,12 @@ compute_pesticide_load_indicator(substances, products)
 \item{products}{Dataframe with raw pesticide application data.}
 }
 \value{
-products Pesticide application dataframe with pesticide indicator columns added.
+Dataframe with pesticide indicators for each pesticide application
+indicated in the products dataframe.
+Computes Pesticide Load Indicator (L) and its subindicators:
+The Human Health Load (HL), Ecotoxicity Load (TL) and Fate Load (FL).
+If standard dosages are provided the Standard Treatment Index (STI) and
+the Pesticide Load Index (LI=STI*L) are also computed.
 }
 \description{
 Compute Pesticide Load Indicator with user supplied information on pesticide properties
@@ -22,10 +27,10 @@ Compute Pesticide Load Indicator with user supplied information on pesticide pro
 # load the dataframe containing the pesticide use data.
 products_user <- products.load()
 # load the (user-supplied) dataframe with detailed information on used pesticides.
-substances_user <- substances.load()  
+substances_user <- substances.load()
 
 # Compute the Pesticide Load Indicator and its sub-indicators using the user supplied data.
-indicators_user <- compute_pesticide_load_indicator(substances = substances_user, 
-products= products_user) 
+indicators_user <- compute_pesticide_load_indicator(substances = substances_user,
+products= products_user)
 }
 }

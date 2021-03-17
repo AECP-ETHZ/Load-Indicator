@@ -33,14 +33,17 @@ compute_pesticide_load_indicator_single(
 \item{...}{overrides for default Load factors.}
 }
 \value{
-products Dataframe with computed pesticide indicators.
+Dataframe with pesticide indicators for a single pesticide application
+indicated by the user.
+Computes Pesticide Load Indicator (L) and its subindicators:
+The Human Health Load (HL), Ecotoxicity Load (TL) and Fate Load (FL).
 }
 \description{
 Compute Pesticide Load Indicator for a single application using the Pesticide Properties database
 }
 \examples{
 \dontrun{
-# Indicate the folder containing the "General","Fate", "Human" and "Ecotox" tables of the PPPDB. 
+# Indicate the folder containing the "General","Fate", "Human" and "Ecotox" tables of the PPPDB.
 # Excel files (under the exact same name, e.g. Human.xlsx) are required.
 # Attention, a licensed access to the PPPDB (Lewis et al., 2016) is required.
 # Note that the "Fate" table should include a column indicating the "SCI.GROW" values
@@ -48,8 +51,14 @@ folder <- "path"
 
 # Compute the Pesticide Load indicator and its subindicators for a single product.
 # Allows to optionally alter the predefined Load.Values.
-compute_pesticide_load_indicator_single(folder = folder,product = "Agora",year = 2009,formula = 1.5,
-substances=c("Cyproconazol","Trifloxystrobin"),cas_numbers = c("94361-06-5","141517-21-7"),
-concentrations = c(0.08,0.1875))
+compute_pesticide_load_indicator_single(
+  folder=folder,
+  product="Agora",
+  year=2009,
+  formula=1.5,
+  substances=c("Cyproconazol", "Trifloxystrobin"),
+  cas_numbers=c("94361-06-5", "141517-21-7"),
+  concentrations = c(0.08,0.1875)
+)
 }
 }
